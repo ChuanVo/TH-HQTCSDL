@@ -43,6 +43,8 @@ namespace HuongVietRestaurant
         {
             string username = txbUsername.Text;
             string password = txbPassword.Text;
+            txbUsername.Text = null;
+            txbPassword.Text = null;
             DataTable result = Login(username, password);
             if (result.Rows.Count > 0)
             {
