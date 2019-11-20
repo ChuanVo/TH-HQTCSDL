@@ -4,10 +4,10 @@ GO
 --============> DIRTY READ <==========
 
 --ChuanVo
-IF OBJECT_ID('sp_DirtyReadChuanVo', 'p') is not null DROP PROC	sp_DirtyReadChuanVo
+IF OBJECT_ID('PROC_DIRTYREAD_T1_CHUANVO', 'p') is not null DROP PROC PROC_DIRTYREAD_T1_CHUANVO
 GO
 
-CREATE PROC sp_DirtyReadChuanVo @id_dish nchar(10), @price int
+CREATE PROC PROC_DIRTYREAD_T1_CHUANVO @id_dish nchar(10), @price int
 AS
 BEGIN
 	BEGIN TRAN UpdateDishPrice
@@ -25,10 +25,10 @@ BEGIN
 END
 
 --TestCase
-IF OBJECT_ID('sp_TestCaseDirtyReadChuanVo_F', 'p') is not null DROP PROC sp_TestCaseDirtyReadChuanVo_F
+IF OBJECT_ID('PROC_DIRTYREAD_T2_F_CHUANVO', 'p') is not null DROP PROC PROC_DIRTYREAD_T2_F_CHUANVO
 GO
 -- Create
-CREATE PROC sp_TestCaseDirtyReadChuanVo_F @id_dish nchar(10)
+CREATE PROC PROC_DIRTYREAD_T2_F_CHUANVO @id_dish nchar(10)
 AS
 BEGIN
 	BEGIN TRAN
@@ -40,10 +40,10 @@ BEGIN
 END
 
 -- Handle: Use insolation level READ COMMITED to handle this error and it is default insolation level of sql server
-IF OBJECT_ID('sp_TestCaseDirtyReadChuanVo_T', 'p') is not null DROP PROC sp_TestCaseDirtyReadChuanVo_T
+IF OBJECT_ID('PROC_DIRTYREAD_T2_T_CHUANVO', 'p') is not null DROP PROC PROC_DIRTYREAD_T2_T_CHUANVO
 GO
 
-CREATE PROC sp_TestCaseDirtyReadChuanVo_T @id_dish nchar(10)
+CREATE PROC PROC_DIRTYREAD_T2_T_CHUANVO @id_dish nchar(10)
 AS
 BEGIN
 	BEGIN TRAN
@@ -53,3 +53,4 @@ BEGIN
 	COMMIT TRAN
 END
 
+EXEC PROC_DIRTYREAD_T2_T_CHUANVO 'dish_1'

@@ -1,17 +1,32 @@
 USE HuongVietRestaurant
 GO
 
-USE HuongVietRestaurant
-GO
-
 --============> LOST UPDATE <==========
 
 --ChuanVo
+IF OBJECT_ID('PROC_LOSTUPDATE_T1_CHUANVO', N'P') IS NOT NULL DROP PROC PROC_LOSTUPDATE_T1_CHUANVO
+GO
+CREATE PROC PROC_LOSTUPDATE_T1_CHUANVO @id_dish nchar(10), @price int
+AS
+BEGIN
+	BEGIN TRAN
+		UPDATE DISH
+		SET price = @price
+		WHERE id_dish = @id_dish
+		WAITFOR DELAY '00:00:15'
+	COMMIT TRAN
+END
+
+EXEC PROC_LOSTUPDATE_T1_CHUANVO 'dish_1', '35000'
+EXEC PROC_LOSTUPDATE_T1_CHUANVO 'dish_1', '15000'
+
+
 
 --Lang
 
 
 --AnHoa
+
 
 
 --TrungDuc
