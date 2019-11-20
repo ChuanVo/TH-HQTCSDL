@@ -1,12 +1,14 @@
-USE HuongVietRestaurant
+﻿USE HuongVietRestaurant
 GO
 
 --============> DIRTY READ <==========
 
 --ChuanVo
+--Quản lý cập nhật giá món ăn (DISH) nhưng chưa commit thì khách hàng vào xem thông tin món ăn.
 IF OBJECT_ID('PROC_DIRTYREAD_T1_CHUANVO', 'p') is not null DROP PROC PROC_DIRTYREAD_T1_CHUANVO
 GO
 
+-- TRANSACTION 1
 CREATE PROC PROC_DIRTYREAD_T1_CHUANVO @id_dish nchar(10), @price int
 AS
 BEGIN
@@ -16,7 +18,7 @@ BEGIN
 		WHERE id_dish = @id_dish 
 		WAITFOR DELAY '00:00:15'
 
-		IF @@ERROR != 0
+		IF @price < 0
 		BEGIN
 			PRINT 'Rollback!'
 			ROLLBACK TRAN UpdateDishPrice
@@ -24,10 +26,9 @@ BEGIN
 	COMMIT TRAN UpdateDishPrice
 END
 
---TestCase
+-- TRANSACTION 2
 IF OBJECT_ID('PROC_DIRTYREAD_T2_F_CHUANVO', 'p') is not null DROP PROC PROC_DIRTYREAD_T2_F_CHUANVO
 GO
--- Create
 CREATE PROC PROC_DIRTYREAD_T2_F_CHUANVO @id_dish nchar(10)
 AS
 BEGIN
@@ -39,18 +40,69 @@ BEGIN
 	COMMIT TRAN
 END
 
+--FIX => TRANSACTION 2 (FIXED)
 -- Handle: Use insolation level READ COMMITED to handle this error and it is default insolation level of sql server
 IF OBJECT_ID('PROC_DIRTYREAD_T2_T_CHUANVO', 'p') is not null DROP PROC PROC_DIRTYREAD_T2_T_CHUANVO
 GO
-
 CREATE PROC PROC_DIRTYREAD_T2_T_CHUANVO @id_dish nchar(10)
 AS
 BEGIN
 	BEGIN TRAN
 		SELECT * 
 		FROM DISH 
-		WHERE id_dish = @id_dish
+		WHERE id_dish = @id_dish and isActive = 1
 	COMMIT TRAN
 END
 
-EXEC PROC_DIRTYREAD_T2_T_CHUANVO 'dish_1'
+--Lang
+--Quản lý cập nhật hình ảnh món ăn (DISH) nhưng chưa commit thì khách hàng vào xem thông tin món ăn.
+--TRANSACTION 1--
+IF OBJECT_ID('PROC_DIRTYREAD_T1_LANG', N'P') IS NOT NULL DROP PROC PROC_DIRTYREAD_T1_LANG
+GO
+CREATE PROC PROC_DIRTYREAD_T1_LANG
+	@id_dish nchar(10),
+	@image nchar(50)
+AS
+BEGIN TRAN
+	UPDATE DISH
+	SET image = @image
+	WHERE id_dish = @id_dish
+	WAITFOR DELAY '00:00:10'
+	IF @image = ''
+		ROLLBACK 
+COMMIT TRAN
+GO
+
+EXEC PROC_DIRTYREAD_T1_LANG 'dish_5', ''
+
+--TRANSACTION 2 --
+IF OBJECT_ID('PROC_DIRTYREAD_T2_LANG', N'P') IS NOT NULL DROP PROC PROC_DIRTYREAD_T2_LANG
+GO
+CREATE PROC PROC_DIRTYREAD_T2_LANG
+	@id_dish nchar(10)
+AS
+BEGIN TRAN
+	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
+	SELECT *
+	FROM DISH 
+	WHERE id_dish = @id_dish
+COMMIT TRAN
+GO
+
+EXEC PROC_DIRTYREAD_T2_LANG 'dish_5'
+
+-- TRANSACTION 2 FIX --
+IF OBJECT_ID('PROC_DIRTYREAD_T2_LANG', N'P') IS NOT NULL DROP PROC PROC_DIRTYREAD_T2_LANG
+GO
+CREATE PROC PROC_DIRTYREAD_T2_LANG
+	@id_dish nchar(10)
+AS
+BEGIN TRAN
+	SET TRANSACTION ISOLATION LEVEL READ COMMITTED
+	SELECT *
+	FROM DISH with (RepeatableRead)
+	WHERE id_dish = @id_dish
+COMMIT TRAN
+GO
+
+EXEC PROC_DIRTYREAD_T2_LANG 'dish_5'
