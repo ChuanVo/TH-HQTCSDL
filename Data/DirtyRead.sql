@@ -5,14 +5,15 @@ GO
 
 --ChuanVo
 --Quản lý cập nhật giá món ăn (DISH) nhưng chưa commit thì khách hàng vào xem thông tin món ăn.
+
+-- TRANSACTION 1
 IF OBJECT_ID('PROC_DIRTYREAD_T1_CHUANVO', 'p') is not null DROP PROC PROC_DIRTYREAD_T1_CHUANVO
 GO
 
--- TRANSACTION 1
 CREATE PROC PROC_DIRTYREAD_T1_CHUANVO @id_dish nchar(10), @price int
 AS
 BEGIN
-	BEGIN TRAN UpdateDishPrice
+	BEGIN TRAN 
 		UPDATE DISH 
 		SET price = @price
 		WHERE id_dish = @id_dish 
@@ -21,9 +22,9 @@ BEGIN
 		IF @price < 0
 		BEGIN
 			PRINT 'Rollback!'
-			ROLLBACK TRAN UpdateDishPrice
+			ROLLBACK 
 		END
-	COMMIT TRAN UpdateDishPrice
+	COMMIT TRAN 
 END
 
 -- TRANSACTION 2
@@ -33,7 +34,7 @@ CREATE PROC PROC_DIRTYREAD_T2_F_CHUANVO @id_dish nchar(10)
 AS
 BEGIN
 	BEGIN TRAN
-	SET TRAN ISOLATION LEVEL REPEATABLE READ 
+	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 		SELECT * 
 		FROM DISH 
 		WHERE id_dish = @id_dish
