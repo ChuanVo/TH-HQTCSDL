@@ -53,3 +53,4 @@ SET TRAN ISOLATION LEVEL READ COMMITTED  --Giải quyết lỗi DirtyRead
 	FROM MENU M, AGENCY A, DISH D, TYPE_DISH T
 	WHERE A.id_agency = @id_agency AND M.id_agency = A.id_agency AND M.id_dish = D.id_dish AND D.type_dish = T.id_type_dish
 COMMIT TRAN
+EXEC PROC_DIRTYREAD_T2_ANHOA 'ag_1'
