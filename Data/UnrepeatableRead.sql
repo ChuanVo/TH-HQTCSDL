@@ -69,6 +69,71 @@ EXEC PROC_UNREPEATABLEREAD_T1_LANG N'td_1'
 
 
 --TrungDuc
+--Khách A xem danh sách các món ăn tại chi nhánh 1 có  SL >=1,
+-- khách B mua hết 1 món trong đó ( update SL =0)
+
+--TRANSACTION 1--
+IF OBJECT_ID('PROC_UNREPEATABLEREAD_T1_TRUNGDUC', N'P') IS NOT NULL DROP PROC PROC_UNREPEATABLEREAD_T1_TRUNGDUC
+GO
+CREATE PROC PROC_UNREPEATABLEREAD_T1_TRUNGDUC
+	@id_agency nchar(10)
+AS
+BEGIN TRAN
+	SELECT mn.id_agency, COUNT(*) 
+	FROM MENU mn
+	WHERE mn.id_agency = @id_agency and mn.isActive = 1
+	GROUP BY mn.id_agency
+	HAVING COUNT(*) >= 1
+	WAITFOR DELAY '00:00:0'
+
+	SELECT *
+	FROM MENU mn1
+	WHERE mn1.id_agency = @id_agency and mn1.isActive = 1 and mn1.unit >= 1
+	
+COMMIT TRAN
+GO
+
+EXEC PROC_UNREPEATABLEREAD_T1_TRUNGDUC N'ag_1'
+
+ --TRANSACTION 2--
+IF OBJECT_ID('PROC_UNREPEATABLEREAD_T2_TRUNGDUC', N'P') IS NOT NULL DROP PROC PROC_UNREPEATABLEREAD_T2_TRUNGDUC
+GO
+CREATE PROC PROC_UNREPEATABLEREAD_T2_TRUNGDUC
+	@id_agency nchar(10),
+	@id_dish nchar(10),
+	@unit int
+AS
+BEGIN TRAN
+	UPDATE MENU
+	SET unit = unit - @unit
+	WHERE id_agency = @id_agency and isActive = 1 and id_dish = @id_dish
+COMMIT TRAN
+GO
+
+EXEC PROC_UNREPEATABLEREAD_T2_TRUNGDUC N'ag_1', N'dish_2', 26
+GO
+--TRANSACTION 1 FIX--
+IF OBJECT_ID('PROC_UNREPEATABLEREAD_T1_TRUNGDUC', N'P') IS NOT NULL DROP PROC PROC_UNREPEATABLEREAD_T1_TRUNGDUC
+GO
+CREATE PROC PROC_UNREPEATABLEREAD_T1_TRUNGDUC
+	@id_agency nchar(10)
+AS
+BEGIN TRAN
+	SELECT mn.id_agency, COUNT(*) 
+	FROM MENU mn WITH (RepeatableRead)
+	WHERE mn.id_agency = @id_agency and mn.isActive = 1
+	GROUP BY mn.id_agency
+	HAVING COUNT(*) >= 1
+	WAITFOR DELAY '00:00:0'
+
+	SELECT *
+	FROM MENU mn1
+	WHERE mn1.id_agency = @id_agency and mn1.isActive = 1 and mn1.unit >= 1
+	
+COMMIT TRAN
+GO
+
+EXEC PROC_UNREPEATABLEREAD_T1_TRUNGDUC N'ag_1'
 
 --DangLam
 
