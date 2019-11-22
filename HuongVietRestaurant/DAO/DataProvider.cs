@@ -20,7 +20,7 @@ namespace HuongVietRestaurant.DAO
 
         private DataProvider() { }
 
-        private string connectionSTR = "Data Source=DANGLAM;Initial Catalog=HuongVietRestaurant;Integrated Security=True";
+        private string connectionSTR = @"Data Source=.\SQL2014;Initial Catalog=HuongVietRestaurant;Integrated Security=True";
 
         public DataTable ExecuteQuery(string query, object[] parameter = null)
         {

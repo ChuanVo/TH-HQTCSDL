@@ -45,8 +45,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DAO\AgencyDAO.cs" />
     <Compile Include="DAO\DataProvider.cs" />
+    <Compile Include="DAO\DishDAO.cs" />
     <Compile Include="DAO\LoginDAO.cs" />
+    <Compile Include="DAO\TypeDishDAO.cs" />
+    <Compile Include="DTO\Dish.cs" />
+    <Compile Include="DTO\TypeDish.cs" />
     <Compile Include="fCustomer.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -100,7 +105,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="DBO\" />
-    <Folder Include="DTO\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

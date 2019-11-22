@@ -55,14 +55,14 @@ namespace HuongVietRestaurant
                     f.ShowDialog();
                     this.Show();
                 }
-                else
+               /* else
                 {
                     fCustomer f = new fCustomer();
                     this.Hide();
                     f.ShowDialog();
                     this.Show();
                 }
-                
+                */
             }
             else
             {
