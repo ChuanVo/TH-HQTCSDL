@@ -89,7 +89,7 @@ EXEC PROC_LOSTUPDATE_T2_LANG 'dish_5', 10, 'ag_1'
 --TrungDuc => CHƯA CÓ ĐÚNG. COMMIT CHO CÓ THÔI ĐÓ =))
 
 --Admin 1 đang thực hiện update tên của món ăn dish_1 trong bảng món ăn(chưa commit),
--- thì Admin 2 Xóa  món ăn dish_1 trong bảng DISH 
+-- thì Admin 2 update  món ăn dish_1 trong bảng DISH 
 --T1: Admin thực hiện update loại món ăn
 IF OBJECT_ID('PROC_LOSTUPDATE_T1_TRUNGDUC', 'p') is not null DROP PROC PROC_LOSTUPDATE_T1_TRUNGDUC
 GO
@@ -99,34 +99,56 @@ CREATE PROC PROC_LOSTUPDATE_T1_TRUNGDUC
 AS
 BEGIN TRAN
 	SELECT *
-	FROM DISH d
-	WHERE id_dish = @id_dish 
+	FROM DISH d 
+	WHERE id_dish = @id_dish and isActive = 1
+	
+	UPDATE DISH 
+	SET dish_name = @name
+	WHERE id_dish = @id_dish and isActive = 1
 	WAITFOR DELAY '00:00:10'
 
-	UPDATE DISH
-	SET dish_name = @name
-	WHERE id_dish = @id_dish
-
 COMMIT TRAN
+GO
+EXEC PROC_LOSTUPDATE_T1_TRUNGDUC N'dish_2', N'bun mac qua roi'
 
-EXEC PROC_LOSTUPDATE_T1_TRUNGDUC N'dish_2', N'bun 2 ne !'
-
---T2: Admin 2 Xóa  món ăn dish_1 trong bảng DISH 
+--T2: Admin 2 update món ăn dish_1 trong bảng DISH 
 IF OBJECT_ID('PROC_LOSTUPDATE_T2_TRUNGDUC', 'p') is not null DROP PROC PROC_LOSTUPDATE_T2_TRUNGDUC
 GO
 CREATE PROC PROC_LOSTUPDATE_T2_TRUNGDUC
-	@id_dish nchar(10)
+	@id_dish nchar(10),
+	@name nchar(50)
 AS
 BEGIN TRAN
+	--SET TRANSACTION ISOLATION LEVEL REPEATABLE READ
+	UPDATE DISH 
+	SET dish_name = @name
+	WHERE id_dish = @id_dish and isActive = 1
+
 	SELECT *
 	FROM DISH d
-	WHERE id_dish = @id_dish and isActive = 1 
-
-	UPDATE DISH
-	SET isActive = 0
-	WHERE id_dish = @id_dish and isActive = 1
+	WHERE id_dish = @id_dish
 COMMIT TRAN
+GO
+EXEC PROC_LOSTUPDATE_T2_TRUNGDUC N'dish_2', N'bun bla bla bla'
 
-EXEC PROC_LOSTUPDATE_T2_TRUNGDUC N'dish_2'
+--T2 FIX: Admin 2 update món ăn dish_1 trong bảng DISH 
+IF OBJECT_ID('PROC_LOSTUPDATE_T2_TRUNGDUC', 'p') is not null DROP PROC PROC_LOSTUPDATE_T2_TRUNGDUC
+GO
+CREATE PROC PROC_LOSTUPDATE_T2_TRUNGDUC
+	@id_dish nchar(10),
+	@name nchar(50)
+AS
+BEGIN TRAN
+	SET TRANSACTION ISOLATION LEVEL REPEATABLE READ
+	UPDATE DISH 
+	SET dish_name = @name
+	WHERE id_dish = @id_dish and isActive = 1
+
+	SELECT *
+	FROM DISH d
+	WHERE id_dish = @id_dish
+COMMIT TRAN
+GO
+EXEC PROC_LOSTUPDATE_T2_TRUNGDUC N'dish_2', N'bun bla bla bla'
 --DangLam
 
