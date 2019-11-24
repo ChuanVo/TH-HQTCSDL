@@ -1,7 +1,7 @@
 USE HuongVietRestaurant
 GO
 
---===============> TEST CASE DEADLOCK <==============
+--===============> TEST CASE 02 <==============
 
 --ChuanVo
 

@@ -1,5 +1,6 @@
-﻿USE HuongVietRestaurant
+﻿sUSE HuongVietRestaurant
 GO
+--===============> TEST CASE 01 <==============
 
 /*
 - TestCase01: 
