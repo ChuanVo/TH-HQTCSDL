@@ -15,10 +15,6 @@ BEGIN TRAN
 	FROM DISH with (RepeatableRead) 
 	WHERE isActive = 1
 	WAITFOR DELAY '00:00:15'
-
-	SELECT * 
-	FROM DISH 
-	WHERE isActive = 1
 COMMIT TRAN
 
 EXEC PROC_PHANTOM_T1_CHUANVO
@@ -49,10 +45,6 @@ BEGIN TRAN
 	FROM DISH with (Serializable) 
 	WHERE isActive = 1
 	WAITFOR DELAY '00:00:15'
-
-	SELECT * 
-	FROM DISH 
-	WHERE isActive = 1
 COMMIT TRAN
 
 
@@ -70,11 +62,6 @@ BEGIN TRAN
 	FROM DISH 
 	WHERE type_dish = @id_type and isActive = 1
 	WAITFOR DELAY '00:00:15'
-
-	SELECT *
-	FROM DISH
-	WHERE type_dish = @id_type and isActive = 1
-	
 COMMIT TRAN
 GO
 
@@ -108,17 +95,11 @@ BEGIN TRAN
 	FROM DISH WITH (Serializable)
 	WHERE type_dish = @id_type
 	WAITFOR DELAY '00:00:15'
-
-	SELECT *
-	FROM DISH
-	WHERE type_dish = @id_type
-	
 COMMIT TRAN
 GO
 
 EXEC PROC_PHANTOM_T1_LANG N'td_1'
 
---TrungDuc
 
 --Lam
 --Trong khi người quản lý xem danh sách nhân viên (chưa xong) thì người quản lý khác thêm nhân viên mới vào nhà hàng.
@@ -129,13 +110,9 @@ CREATE PROC PROC_PHANTOM_T1_LAM
 AS
 BEGIN TRAN
 	SELECT * 
-	FROM EMPLOYEE with (RepeatableRead) 
+	FROM EMPLOYEE
 	WHERE isActive = 1
 	WAITFOR DELAY '00:00:15'
-
-	SELECT * 
-	FROM EMPLOYEE 
-	WHERE isActive = 1
 COMMIT TRAN
 
 EXEC PROC_PHANTOM_T1_LAM
@@ -168,10 +145,6 @@ BEGIN TRAN
 	FROM EMPLOYEE with (Serializable) 
 	WHERE isActive = 1
 	WAITFOR DELAY '00:00:15'
-
-	SELECT * 
-	FROM EMPLOYEE 
-	WHERE isActive = 1
 COMMIT TRAN
 
 --AnHoa
@@ -193,17 +166,14 @@ EXEC PROC_PHANTOM_T1_ANHOA 'td_1', 'ag_1'
 --TRANSACTION 2:
 IF OBJECT_ID('PROC_PHANTOM_T2_ANHOA', 'p') is not null DROP PROC PROC_PHANTOM_T2_ANHOA
 GO
-CREATE PROC PROC_PHANTOM_T2_ANHOA @iddish nchar(10), @typedish nchar(10), @dishname nvarchar(50), @price int, 
-								  @image nvarchar(50), @isActive int, @agency nchar(10), @unit int	
+CREATE PROC PROC_PHANTOM_T2_ANHOA @idagency nchar(10), @iddish nchar(10), @unit int	
 AS
 BEGIN TRAN
-	INSERT INTO DISH(id_dish, type_dish, dish_name, price, image, isActive)
-	VALUES (@iddish, @typedish, @dishname, @price, @image, @isActive)
-
 	INSERT INTO MENU(id_agency, id_dish, unit, isActive)
-	VALUES (@agency, @iddish, @unit, 1)
+	VALUES (@idagency, @iddish, @unit, 1)
+
 COMMIT TRAN
-EXEC PROC_PHANTOM_T2_ANHOA 'dish_15', 'td_1', N'Bánh bao trứng muối', 15, './', 1, 'ag_1', 10
+EXEC PROC_PHANTOM_T2_ANHOA 'ag_2', 'dish_3', 20
 
 --TRANSACTION 1 FIX:
 IF OBJECT_ID('PROC_PHANTOM_T1_ANHOA', 'p') is not null DROP PROC PROC_PHANTOM_T1_ANHOA
@@ -218,3 +188,65 @@ SET TRAN ISOLATION LEVEL SERIALIZABLE  --Giải quyết lỗi Phantom
 	WAITFOR DELAY '00:00:15'
 COMMIT TRAN
 EXEC PROC_PHANTOM_T1_ANHOA 'td_1', 'ag_1'
+
+
+--TrungDuc
+USE HuongVietRestaurant
+GO
+
+--LỖI PHANTOM
+--Người quản lý A xem toàn bộ đơn hàng (chưa xong) thì có đơn hàng mới được tạo.
+--T1: quản lý A xem toàn bộ đơn hàng
+IF OBJECT_ID('PROC_PHANTOM_T1_TRUNGDUC', 'p') is not null DROP PROC PROC_PHANTOM_T1_TRUNGDUC
+GO
+CREATE PROC PROC_PHANTOM_T1_TRUNGDUC
+	@id_agency nchar(10)
+AS
+BEGIN TRAN
+	SELECT COUNT(*) 
+	FROM BILL b
+	WHERE b.agency = @id_agency and b.isActive = 1
+	WAITFOR DELAY '00:00:10'
+COMMIT TRAN 
+
+EXEC PROC_PHANTOM_T1_TRUNGDUC N'ag_2'
+
+--T2: Đơn hàng mới được tạo
+IF OBJECT_ID('PROC_PHANTOM_T2_TRUNGDUC', 'p') is not null DROP PROC PROC_PHANTOM_T2_TRUNGDUC
+GO
+CREATE PROC PROC_PHANTOM_T2_TRUNGDUC
+	@id_bill nchar(10),
+	@agency nchar(10),
+	@customer nchar(10),
+	@status nchar(10),
+	@order nchar(10),
+	@payment_method nchar(10),
+	@total float,
+	@fee nchar(10),
+	@isActive float
+AS
+BEGIN TRAN
+	INSERT INTO BILL(id_bill,agency,customer,status,[order],payment_method,total,fee,isActive)
+	VALUES (@id_bill,@agency,@customer,@status,@order,@payment_method,@total,@fee,@isActive)
+COMMIT TRAN
+
+EXEC PROC_PHANTOM_T2_TRUNGDUC 
+N'bill_5    ', N'ag_2      ', N'cus_2     ', N'sta_2     ', N'order_2   ', N'pay_1     ', 69000, N'fee_1     ', 1
+
+--T1 FIX: quản lý A xem toàn bộ đơn hàng
+GO
+IF OBJECT_ID('PROC_PHANTOM_T1_TRUNGDUC', 'p') is not null DROP PROC PROC_PHANTOM_T1_TRUNGDUC
+GO
+CREATE PROC PROC_PHANTOM_T1_TRUNGDUC
+	@id_agency nchar(10)
+AS
+BEGIN TRAN
+	SELECT COUNT(*) 
+	FROM BILL b WITH (Serializable)
+	WHERE b.agency = @id_agency and b.isActive = 1
+	WAITFOR DELAY '00:00:10'
+COMMIT TRAN 
+
+EXEC PROC_PHANTOM_T1_TRUNGDUC N'ag_2'
+
+

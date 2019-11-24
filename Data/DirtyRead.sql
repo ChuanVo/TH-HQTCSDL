@@ -19,12 +19,15 @@ BEGIN
 		WHERE id_dish = @id_dish 
 		WAITFOR DELAY '00:00:15'
 
-		IF @price < 0
+		IF @price <= 0
 		BEGIN
 			PRINT 'Rollback!'
-			ROLLBACK 
+			ROLLBACK TRAN
 		END
-	COMMIT TRAN 
+		ELSE
+		BEGIN
+			COMMIT TRAN
+		END
 END
 
 -- TRANSACTION 2
@@ -70,8 +73,14 @@ BEGIN TRAN
 	WHERE id_dish = @id_dish
 	WAITFOR DELAY '00:00:10'
 	IF @image = ''
-		ROLLBACK 
-COMMIT TRAN
+	BEGIN
+		PRINT 'Rollback!'
+		ROLLBACK TRAN
+	END
+	ELSE
+	BEGIN
+		COMMIT TRAN
+	END
 GO
 
 EXEC PROC_DIRTYREAD_T1_LANG 'dish_5', ''
@@ -127,7 +136,12 @@ BEGIN
 
 		IF @id_position = ''
 		BEGIN
-			ROLLBACK
+			PRINT 'Rollback!'
+			ROLLBACK TRAN
+		END
+		ELSE
+		BEGIN
+			COMMIT TRAN
 		END
 	COMMIT TRAN
 END
@@ -194,9 +208,9 @@ CREATE PROC PROC_DIRTYREAD_T2_ANHOA @id_agency nchar(10)
 AS
 BEGIN TRAN
 SET TRAN ISOLATION LEVEL READ UNCOMMITTED  --Đảm bảo cho việc xảy ra DirtyRead
-	SELECT D.dish_name, T.type_dish_name, D.price, M.unit
-	FROM MENU M, AGENCY A, DISH D, TYPE_DISH T
-	WHERE A.id_agency = @id_agency AND M.id_agency = A.id_agency AND M.id_dish = D.id_dish AND D.type_dish = T.id_type_dish
+	SELECT *
+	FROM MENU
+	WHERE id_agency = @id_agency
 COMMIT TRAN
 
 EXEC PROC_DIRTYREAD_T2_ANHOA 'ag_1'
@@ -208,8 +222,69 @@ CREATE PROC PROC_DIRTYREAD_T2_ANHOA @id_agency nchar(10)
 AS
 BEGIN TRAN
 SET TRAN ISOLATION LEVEL READ COMMITTED  --Giải quyết lỗi DirtyRead
-	SELECT D.dish_name, T.type_dish_name, D.price, M.unit
-	FROM MENU M, AGENCY A, DISH D, TYPE_DISH T
-	WHERE A.id_agency = @id_agency AND M.id_agency = A.id_agency AND M.id_dish = D.id_dish AND D.type_dish = T.id_type_dish
+	SELECT *
+	FROM MENU
+	WHERE id_agency = @id_agency
 COMMIT TRAN
 EXEC PROC_DIRTYREAD_T2_ANHOA 'ag_1'
+--DUC
+--Nhân viên cập nhật tình trạng ở BILL nhưng chưa commit thì quản lý xem tình trạng ở BILL.
+--T1: Nhân viên cập nhật tình trạng bill
+IF OBJECT_ID('PROC_DIRTYREAD_T1_TRUNGDUC', 'p') is not null DROP PROC PROC_DIRTYREAD_T1_TRUNGDUC
+GO
+CREATE PROC PROC_DIRTYREAD_T1_TRUNGDUC
+	@id_bill nchar(10),
+	@status nchar(10)
+AS
+BEGIN TRAN
+	UPDATE BILL
+	SET status = @status
+	WHERE id_bill = @id_bill
+	WAITFOR DELAY '00:00:5'
+
+	IF @status = 'sta_3'
+	BEGIN
+		PRINT 'Rollback!'
+		ROLLBACK TRAN
+	END
+	ELSE
+	BEGIN
+		COMMIT TRAN
+	END
+GO
+
+EXEC PROC_DIRTYREAD_T1_TRUNGDUC  N'bill_1', 'sta_3'
+
+--T2: Nhân viên đang xem tình trạng bill
+
+IF OBJECT_ID('PROC_DIRTYREAD_T2_TRUNGDUC', 'p') is not null DROP PROC PROC_DIRTYREAD_T2_TRUNGDUC
+GO
+CREATE PROC PROC_DIRTYREAD_T2_TRUNGDUC
+	@id_bill nchar(10)
+AS
+BEGIN TRAN
+SET TRAN ISOLATION LEVEL READ UNCOMMITTED  --Đảm bảo cho việc xảy ra DirtyRead
+	SELECT B.id_bill, S.description
+	FROM BILL B, STATUS S 
+	WHERE B.id_bill = @id_bill AND B.status=S.id_status
+COMMIT TRAN
+GO
+
+EXEC PROC_DIRTYREAD_T2_TRUNGDUC  N'bill_1'
+
+--T2 FIX: Nhân viên đang xem tình trạng bill
+
+IF OBJECT_ID('PROC_DIRTYREAD_T2_TRUNGDUC', 'p') is not null DROP PROC PROC_DIRTYREAD_T2_TRUNGDUC
+GO
+CREATE PROC PROC_DIRTYREAD_T2_TRUNGDUC
+	@id_bill nchar(10)
+AS
+BEGIN TRAN
+SET TRAN ISOLATION LEVEL READ COMMITTED  --Đảm bảo cho việc xảy ra DirtyRead
+	SELECT B.id_bill, S.description
+	FROM BILL B, STATUS S 
+	WHERE B.id_bill = @id_bill AND B.status=S.id_status
+COMMIT TRAN
+GO
+EXEC PROC_DIRTYREAD_T2_TRUNGDUC  N'bill_1'
+
