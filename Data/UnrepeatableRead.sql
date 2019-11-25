@@ -13,13 +13,13 @@ AS
 BEGIN TRAN
 	SELECT *
 	FROM DISH 
-	WHERE id_dish = @id_dish and d.isActive = 1
+	WHERE id_dish = @id_dish and isActive = 1
 	WAITFOR DELAY '00:00:15'
 
 
 	SELECT *
 	FROM DISH 
-	WHERE id_dish = @id_dish and d.isActive = 1
+	WHERE id_dish = @id_dish and isActive = 1
 
 COMMIT TRAN
 
@@ -61,13 +61,13 @@ AS
 BEGIN TRAN
 	SELECT *
 	FROM DISH 
-	WHERE id_dish = @id_dish and d.isActive = 1
+	WHERE id_dish = @id_dish and isActive = 1
 	WAITFOR DELAY '00:00:15'
 
 
 	SELECT *
 	FROM DISH 
-	WHERE id_dish = @id_dish and d.isActive = 1
+	WHERE id_dish = @id_dish and isActive = 1
 
 COMMIT TRAN
 
@@ -175,7 +175,7 @@ BEGIN TRAN
 	WHERE mn.id_agency = @id_agency and mn.isActive = 1
 	GROUP BY mn.id_agency
 	HAVING COUNT(*) >= 1
-	WAITFOR DELAY '00:00:0'
+	WAITFOR DELAY '00:00:15'
 
 	SELECT *
 	FROM MENU mn1
@@ -215,7 +215,7 @@ BEGIN TRAN
 	WHERE mn.id_agency = @id_agency and mn.isActive = 1
 	GROUP BY mn.id_agency
 	HAVING COUNT(*) >= 1
-	WAITFOR DELAY '00:00:0'
+	WAITFOR DELAY '00:00:15'
 
 	SELECT *
 	FROM MENU mn1
@@ -236,12 +236,12 @@ AS
 BEGIN TRAN
 	SELECT D.id_dish, T.type_dish_name, D.dish_name, A.agency_name, M.unit, D.price
 	FROM DISH D, AGENCY A, MENU M, TYPE_DISH T
-	WHERE T.id_type_dish = D.type_dish AND M.id_dish = D.id_dish AND M.id_agency = A.id_agency AND D.price <= @price
+	WHERE A.id_agency = @id_agency AND T.id_type_dish = D.type_dish AND M.id_dish = D.id_dish AND M.id_agency = A.id_agency AND D.price <= @price
 	ORDER BY D.price ASC
 	WAITFOR DELAY '00:00:15'
 	SELECT D.id_dish, T.type_dish_name, D.dish_name, A.agency_name, M.unit, D.price
 	FROM DISH D, AGENCY A, MENU M, TYPE_DISH T
-	WHERE T.id_type_dish = D.type_dish AND M.id_dish = D.id_dish AND M.id_agency = A.id_agency AND D.price <= @price
+	WHERE A.id_agency = @id_agency AND  T.id_type_dish = D.type_dish AND M.id_dish = D.id_dish AND M.id_agency = A.id_agency AND D.price <= @price
 	ORDER BY D.price ASC
 COMMIT TRAN  
 EXEC PROC_UNREPEATABLEREAD_T1_ANHOA 'ag_1', 50000
@@ -267,12 +267,12 @@ BEGIN TRAN
 SET TRAN ISOLATION LEVEL REPEATABLE READ
 	SELECT D.id_dish, T.type_dish_name, D.dish_name, A.agency_name, M.unit, D.price
 	FROM DISH D, AGENCY A, MENU M, TYPE_DISH T
-	WHERE T.id_type_dish = D.type_dish AND M.id_dish = D.id_dish AND M.id_agency = A.id_agency AND D.price <= @price
+	WHERE A.id_agency = @id_agency AND  T.id_type_dish = D.type_dish AND M.id_dish = D.id_dish AND M.id_agency = A.id_agency AND D.price <= @price
 	ORDER BY D.price ASC
 	WAITFOR DELAY '00:00:15'
 	SELECT D.id_dish, T.type_dish_name, D.dish_name, A.agency_name, M.unit, D.price
-	FROM DISH D, AGENCY A, MENU M, TYPE_DISH T
-	WHERE T.id_type_dish = D.type_dish AND M.id_dish = D.id_dish AND M.id_agency = A.id_agency AND D.price <= @price
+	FROM  DISH D, AGENCY A, MENU M, TYPE_DISH T
+	WHERE A.id_agency = @id_agency AND  T.id_type_dish = D.type_dish AND M.id_dish = D.id_dish AND M.id_agency = A.id_agency AND D.price <= @price
 	ORDER BY D.price ASC
 COMMIT TRAN     
 EXEC PROC_UNREPEATABLEREAD_T1_ANHOA 'ag_1', 50000
