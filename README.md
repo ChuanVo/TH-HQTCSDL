@@ -1,9 +1,6 @@
 # TH-HQTCSDL
-Deadline Proc and description for error: 24h - 21/11/2019
 
-Deadline App: 
+## DEADLINE: 31/12/2019
 
-    - 12h 24/11/2019 (part 1)
-    
-    - 24h 27/11/2019 (done)
+### Deadline App: 30/11/2019 
 
