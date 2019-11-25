@@ -120,21 +120,19 @@ EXEC PROC_DIRTYREAD_T2_LANG 'dish_5'
 
 
 --Lam
--- Mô tả: Quản lý cửa hàng cập nhật position cho nhân viên cấp dưới (chưa commit) thì nhân viên khác vào xem thông tin của nhân viên được cập nhật
-
--- T1: Quản lý cập nhật loại món ăn @type_dish của món có id là @id_dish
+--Quản lý cập nhât gmail nhân viên nhưng chưa commit 
+--thì quản lý khác vào xem thông tin nhân viên.
+-- T1: Quản lý cập nhât tên nhân viên 
 IF OBJECT_ID('PROC_DIRTYREAD_T1_LAM', 'p') IS NOT NULL DROP PROC PROC_DIRTYREAD_T1_LAM
 GO
-CREATE PROC PROC_DIRTYREAD_T1_LAM @id_employee nchar(10), @id_position nchar(10)
+CREATE PROC PROC_DIRTYREAD_T1_LAM @id_employee nchar(10), @gmail nchar(50)
 AS
-BEGIN
-	BEGIN TRAN
+BEGIN TRAN
 		UPDATE EMPLOYEE
-		SET position = @id_position
+		SET gmail = @gmail
 		WHERE id_employee = @id_employee
-		WAITFOR DELAY '00:00:15'
-
-		IF @id_position = ''
+		WAITFOR DELAY '00:00:10'
+		IF @gmail = ''
 		BEGIN
 			PRINT 'Rollback!'
 			ROLLBACK TRAN
@@ -143,38 +141,39 @@ BEGIN
 		BEGIN
 			COMMIT TRAN
 		END
-	COMMIT TRAN
-END
+EXEC PROC_DIRTYREAD_T1_LAM 'em_1', ''
 
--- T2: Nhân viên xem thông tin của nhân viên mới được cập nhật.
-IF OBJECT_ID('PROC_DIRTYREAD_T2_LAM', 'p') IS NOT NULL DROP PROC PROC_DIRTYREAD_T2_LAM
+-- T2: quản lý khác vào xem thông tin nhân viên.
+IF OBJECT_ID('PROC_DIRTYREAD_T2_LAM', 'p') IS NOT NULL
+DROP PROC PROC_DIRTYREAD_T2_LAM
 GO
 CREATE PROC PROC_DIRTYREAD_T2_LAM @id_employee nchar(10)
 AS
-BEGIN
-	BEGIN TRAN
+BEGIN TRAN
 		SET TRAN ISOLATION LEVEL READ UNCOMMITTED  
 		SELECT *
 		FROM EMPLOYEE
 		WHERE id_employee = @id_employee
-	COMMIT TRAN
-END
+COMMIT TRAN
 
 
--- T2: FIXED
-IF OBJECT_ID('PROC_DIRTYREAD_T2_LAM', 'p') IS NOT NULL DROP PROC PROC_DIRTYREAD_T2_LAM
+EXEC PROC_DIRTYREAD_T2_LAM 'em_1'
+
+-- T2 FIX: quản lý khác vào xem thông tin nhân viên.
+IF OBJECT_ID('PROC_DIRTYREAD_T2_LAM', 'p') IS NOT NULL
+DROP PROC PROC_DIRTYREAD_T2_LAM
 GO
 CREATE PROC PROC_DIRTYREAD_T2_LAM @id_employee nchar(10)
 AS
-BEGIN
-	BEGIN TRAN
-	SET TRAN ISOLATION LEVEL READ UNCOMMITTED  
+BEGIN TRAN
+		SET TRAN ISOLATION LEVEL READ COMMITTED  
 		SELECT *
-		FROM EMPLOYEE with (RepeatableRead)
+		FROM EMPLOYEE
 		WHERE id_employee = @id_employee
-	COMMIT TRAN
-END
+COMMIT TRAN
 
+
+EXEC PROC_DIRTYREAD_T2_LAM 'em_1'
 
 
 --AnHoa
@@ -227,64 +226,62 @@ SET TRAN ISOLATION LEVEL READ COMMITTED  --Giải quyết lỗi DirtyRead
 	WHERE id_agency = @id_agency
 COMMIT TRAN
 EXEC PROC_DIRTYREAD_T2_ANHOA 'ag_1'
---DUC
---Nhân viên cập nhật tình trạng ở BILL nhưng chưa commit thì quản lý xem tình trạng ở BILL.
---T1: Nhân viên cập nhật tình trạng bill
-IF OBJECT_ID('PROC_DIRTYREAD_T1_TRUNGDUC', 'p') is not null DROP PROC PROC_DIRTYREAD_T1_TRUNGDUC
+
+USE HuongVietRestaurant
 GO
-CREATE PROC PROC_DIRTYREAD_T1_TRUNGDUC
-	@id_bill nchar(10),
-	@status nchar(10)
+
+--TRUNGDUC
+-- Mô tả: Quản lý cửa hàng cập nhật position cho nhân viên cấp dưới (chưa commit) thì nhân viên khác vào xem thông tin của nhân viên được cập nhật
+
+-- T1: Quản lý cập nhât tên nhân viên 
+IF OBJECT_ID('PROC_DIRTYREAD_T1_TRUNGDUC', 'p') IS NOT NULL DROP PROC PROC_DIRTYREAD_T1_TRUNGDUC
+GO
+CREATE PROC PROC_DIRTYREAD_T1_TRUNGDUC @id_employee nchar(10), @name nchar(50)
 AS
 BEGIN TRAN
-	UPDATE BILL
-	SET status = @status
-	WHERE id_bill = @id_bill
-	WAITFOR DELAY '00:00:5'
+		UPDATE EMPLOYEE
+		SET name = @name
+		WHERE id_employee = @id_employee
+		WAITFOR DELAY '00:00:10'
+		IF @name = ''
+		BEGIN
+			PRINT 'Rollback!'
+			ROLLBACK TRAN
+		END
+		ELSE
+		BEGIN
+			COMMIT TRAN
+		END
+EXEC PROC_DIRTYREAD_T1_TRUNGDUC 'em_1', ''
 
-	IF @status = 'sta_3'
-	BEGIN
-		PRINT 'Rollback!'
-		ROLLBACK TRAN
-	END
-	ELSE
-	BEGIN
-		COMMIT TRAN
-	END
+-- T2: quản lý khác vào xem thông tin nhân viên.
+IF OBJECT_ID('PROC_DIRTYREAD_T2_TRUNGDUC', 'p') IS NOT NULL
+DROP PROC PROC_DIRTYREAD_T2_TRUNGDUC
 GO
-
-EXEC PROC_DIRTYREAD_T1_TRUNGDUC  N'bill_1', 'sta_3'
-
---T2: Nhân viên đang xem tình trạng bill
-
-IF OBJECT_ID('PROC_DIRTYREAD_T2_TRUNGDUC', 'p') is not null DROP PROC PROC_DIRTYREAD_T2_TRUNGDUC
-GO
-CREATE PROC PROC_DIRTYREAD_T2_TRUNGDUC
-	@id_bill nchar(10)
+CREATE PROC PROC_DIRTYREAD_T2_TRUNGDUC @id_employee nchar(10)
 AS
 BEGIN TRAN
-SET TRAN ISOLATION LEVEL READ UNCOMMITTED  --Đảm bảo cho việc xảy ra DirtyRead
-	SELECT B.id_bill, S.description
-	FROM BILL B, STATUS S 
-	WHERE B.id_bill = @id_bill AND B.status=S.id_status
+		SET TRAN ISOLATION LEVEL READ UNCOMMITTED  
+		SELECT *
+		FROM EMPLOYEE
+		WHERE id_employee = @id_employee
 COMMIT TRAN
+
+
+EXEC PROC_DIRTYREAD_T2_TRUNGDUC 'em_1'
+
+-- T2 FIX: quản lý khác vào xem thông tin nhân viên.
+IF OBJECT_ID('PROC_DIRTYREAD_T2_TRUNGDUC', 'p') IS NOT NULL
+DROP PROC PROC_DIRTYREAD_T2_TRUNGDUC
 GO
-
-EXEC PROC_DIRTYREAD_T2_TRUNGDUC  N'bill_1'
-
---T2 FIX: Nhân viên đang xem tình trạng bill
-
-IF OBJECT_ID('PROC_DIRTYREAD_T2_TRUNGDUC', 'p') is not null DROP PROC PROC_DIRTYREAD_T2_TRUNGDUC
-GO
-CREATE PROC PROC_DIRTYREAD_T2_TRUNGDUC
-	@id_bill nchar(10)
+CREATE PROC PROC_DIRTYREAD_T2_TRUNGDUC @id_employee nchar(10)
 AS
 BEGIN TRAN
-SET TRAN ISOLATION LEVEL READ COMMITTED  --Đảm bảo cho việc xảy ra DirtyRead
-	SELECT B.id_bill, S.description
-	FROM BILL B, STATUS S 
-	WHERE B.id_bill = @id_bill AND B.status=S.id_status
+		SET TRAN ISOLATION LEVEL READ COMMITTED  
+		SELECT *
+		FROM EMPLOYEE
+		WHERE id_employee = @id_employee
 COMMIT TRAN
-GO
-EXEC PROC_DIRTYREAD_T2_TRUNGDUC  N'bill_1'
 
+
+EXEC PROC_DIRTYREAD_T2_TRUNGDUC 'em_1'
