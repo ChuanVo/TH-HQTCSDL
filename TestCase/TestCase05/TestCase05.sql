@@ -1,7 +1,7 @@
 USE HuongVietRestaurant
 GO
 
---===============> TEST CASE LOST UPDATE <==============
+--===============> TEST CASE 02 <==============
 
 --ChuanVo
 

@@ -1,7 +1,7 @@
 USE HuongVietRestaurant
 GO
 
---===============> TEST CASE UNREPEATABLE READ <==============
+--===============> TEST CASE 02 <==============
 
 --ChuanVo
 
