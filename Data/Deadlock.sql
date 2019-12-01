@@ -94,6 +94,7 @@ EXEC PROC_DEADLOCK_T2_CHUAN 'dish_1', N'Rong biet vuot dai duong', 'td_1', 'Ngon
 --		+ SELECT * from TYPE_DISH where id_type_dish = '01'
 --		+ wait(15'')
 -- 		+ UPDATE TYPE_DISH set dish_name = 'loại món mặn chằng' where id_type_dish = '01' 
+
 --TRANSACTION 1 --
 IF OBJECT_ID('PROC_DEADLOCK_T1_LAM', N'P') IS NOT NULL DROP PROC PROC_DEADLOCK_T1_LAM
 GO
@@ -103,18 +104,16 @@ CREATE PROC PROC_DEADLOCK_T1_LAM
 AS
 BEGIN TRAN
 	SELECT * 
-	FROM TYPE_DISH
+	FROM TYPE_DISH WITH (HOLDLOCK)
 	WHERE id_type_dish = @id_type_dish
 	WAITFOR DELAY '00:00:10'
 
-	UPDATE TYPE_DISH	
+	UPDATE TYPE_DISH WITH (XLOCK)		
 	SET type_dish_name = @type_dish_name
 	WHERE id_type_dish = @id_type_dish
-	
 COMMIT TRAN
 
-EXEC PROC_DEADLOCK_T1_LAM 'td_1', N'Mon ngon'
-
+EXEC PROC_DEADLOCK_T1_LAM 'td_1', N'Món nước'
 
 --TRANSACTION 2 --
 IF OBJECT_ID('PROC_DEADLOCK_T2_LAM', N'P') IS NOT NULL DROP PROC PROC_DEADLOCK_T2_LAM
@@ -124,19 +123,39 @@ CREATE PROC PROC_DEADLOCK_T2_LAM
 	@type_dish_name nvarchar(50)
 AS
 BEGIN TRAN
-	UPDATE TYPE_DISH	
+	SELECT * 
+	FROM TYPE_DISH WITH (HOLDLOCK)
+	WHERE id_type_dish = @id_type_dish
+
+	UPDATE TYPE_DISH WITH (XLOCK)	
 	SET type_dish_name = @type_dish_name
 	WHERE id_type_dish = @id_type_dish
-	WAITFOR DELAY '00:00:10'
 
-	SELECT * 
-	FROM TYPE_DISH
-	WHERE id_type_dish = @id_type_dish
-	
 COMMIT TRAN
 GO
 
-EXEC PROC_DEADLOCK_T2_LAM 'td_1', N'Mon ngon'
+EXEC PROC_DEADLOCK_T2_LAM 'td_1', N'Món tráng miệng'
+
+--============================================= FIX =============================================--
+--TRANSACTION 1 --
+IF OBJECT_ID('PROC_DEADLOCK_T1_LAM', N'P') IS NOT NULL DROP PROC PROC_DEADLOCK_T1_LAM
+GO
+CREATE PROC PROC_DEADLOCK_T1_LAM
+	@id_type_dish nchar(10),
+	@type_dish_name nvarchar(50)
+AS
+BEGIN TRAN
+	SELECT * 
+	FROM TYPE_DISH WITH (NOLOCK)
+	WHERE id_type_dish = @id_type_dish
+	WAITFOR DELAY '00:00:10'
+
+	UPDATE TYPE_DISH WITH (XLOCK)		
+	SET type_dish_name = @type_dish_name
+	WHERE id_type_dish = @id_type_dish
+COMMIT TRAN
+
+EXEC PROC_DEADLOCK_T1_LAM 'td_1', N'Món nước'
 
 --TRANSACTION 2 FIX--
 IF OBJECT_ID('PROC_DEADLOCK_T2_LAM', N'P') IS NOT NULL DROP PROC PROC_DEADLOCK_T2_LAM
@@ -146,19 +165,18 @@ CREATE PROC PROC_DEADLOCK_T2_LAM
 	@type_dish_name nvarchar(50)
 AS
 BEGIN TRAN
-	UPDATE TYPE_DISH WITH (NOLOCK) 
-	SET type_dish_name = @type_dish_name
-	WHERE id_type_dish = @id_type_dish
-	WAITFOR DELAY '00:00:10'
-
 	SELECT * 
 	FROM TYPE_DISH
+	WHERE id_type_dish = @id_type_dish
+
+	UPDATE TYPE_DISH WITH (NOLOCK) 
+	SET type_dish_name = @type_dish_name
 	WHERE id_type_dish = @id_type_dish
 	
 COMMIT TRAN
 GO
 
-EXEC PROC_DEADLOCK_T2_LAM 'dish_1', N'Rong biet vuot dai duong', 'td_1', 'Ngon'
+EXEC PROC_DEADLOCK_T2_LAM 'td_1', N'Món tráng miệng'
 
 
 --Lang
@@ -205,6 +223,7 @@ COMMIT TRAN
 GO
 EXEC PROC_DEADLOCK_T2_LANG N'dish_1', N'ag_1', 100 
 
+--============================================= FIX =============================================--
 --TRANSACTION 1 FIX--
 IF OBJECT_ID('PROC_DEADLOCK_T1_LANG', N'P') IS NOT NULL DROP PROC PROC_DEADLOCK_T1_LANG
 GO
@@ -224,6 +243,27 @@ BEGIN TRAN
 COMMIT TRAN
 GO
 EXEC PROC_DEADLOCK_T1_LANG 'dish_1', N'ag_1', 60
+
+
+--TRANSACTION 2 FIX--
+IF OBJECT_ID('PROC_DEADLOCK_T2_LANG', N'P') IS NOT NULL DROP PROC PROC_DEADLOCK_T2_LANG
+GO
+CREATE PROC PROC_DEADLOCK_T2_LANG
+	@id_dish nchar(10),
+	@id_agency nchar(10),
+	@unit int
+AS
+BEGIN TRAN
+	SELECT *
+	FROM MENU m WITH (NOLOCK) 
+	WHERE m.id_dish = @id_dish and m.id_agency = @id_agency and m.isActive = 1 
+	UPDATE MENU WITH (XLOCK) 
+	SET unit = @unit
+	WHERE id_dish = @id_dish and id_agency = @id_agency and isActive = 1
+COMMIT TRAN
+GO
+EXEC PROC_DEADLOCK_T2_LANG N'dish_1', N'ag_1', 100 
+
 
 
 --AnHoa
@@ -246,11 +286,15 @@ AS
 BEGIN TRAN
 	SELECT *
 	FROM DISH WITH (HOLDLOCK)  --Phát khóa đọc trên bảng DISH
-	WAITFOR DELAY '00:00:15'
+	WAITFOR DELAY '00:00:10'
 	INSERT INTO DISH WITH (XLOCK)(id_dish, type_dish, dish_name, price, image, isActive)  --Phát khóa ghi (nhưng không được vì khóa đọc chưa mở)
 	VALUES (@id_dish, @id_typedish, @dishname, @price, @image, 1)
 COMMIT TRAN
+
 EXEC PROC_DEADLOCK_T1_ANHOA 'dish_21', 'td_1', 'Bánh tráng', 10000, './'
+
+SELECT *
+FROM DISH
 
 --TRANSACTION 2:
 IF OBJECT_ID('PROC_DEADLOCK_T2_ANHOA', 'p') is not null DROP PROC PROC_DEADLOCK_T2_ANHOA
@@ -260,13 +304,28 @@ AS
 BEGIN TRAN
 	SELECT *
 	FROM DISH WITH (HOLDLOCK)  --Phát khóa đọc trên bảng DISH
-	WAITFOR DELAY '00:00:15'
 	UPDATE DISH WITH (XLOCK) 
 	SET isActive = 0
 	WHERE id_dish = @id_dish
 COMMIT TRAN
+
 EXEC PROC_DEADLOCK_T2_ANHOA 'dish_1'
 
+--============================================= FIX =============================================--
+--TRANSACTION 1:
+IF OBJECT_ID('PROC_DEADLOCK_T1_ANHOA', 'p') is not null DROP PROC PROC_DEADLOCK_T1_ANHOA
+GO
+CREATE PROC PROC_DEADLOCK_T1_ANHOA @id_dish nchar(10), @id_typedish nchar(10), @dishname nvarchar(50), @price int, @image nvarchar(50)
+AS
+BEGIN TRAN
+	SELECT *
+	FROM DISH WITH (NOLOCK)  --Phát khóa đọc trên bảng DISH
+	WAITFOR DELAY '00:00:10'
+	INSERT INTO DISH WITH (XLOCK)(id_dish, type_dish, dish_name, price, image, isActive)  --Phát khóa ghi (nhưng không được vì khóa đọc chưa mở)
+	VALUES (@id_dish, @id_typedish, @dishname, @price, @image, 1)
+COMMIT TRAN
+
+EXEC PROC_DEADLOCK_T1_ANHOA 'dish_21', 'td_1', 'Bánh tráng', 10000, './'
 --TRANSACTION 2 FIX:
 IF OBJECT_ID('PROC_DEADLOCK_T2_ANHOA', 'p') is not null DROP PROC PROC_DEADLOCK_T2_ANHOA
 GO
@@ -275,12 +334,13 @@ AS
 BEGIN TRAN
 	SELECT *
 	FROM DISH WITH (NOLOCK) 
-	WAITFOR DELAY '00:00:15'
-	UPDATE DISH
+
+	UPDATE DISH WITH (XLOCK) 
 	SET isActive = 0
 	WHERE id_dish = @id_dish
 COMMIT TRAN
 EXEC PROC_DEADLOCK_T2_ANHOA 'dish_1'
+
 
 
 --TrungDuc
@@ -329,7 +389,6 @@ BEGIN TRAN
 	SELECT * 
 	FROM BILL b WITH(HOLDLOCK)
 	WHERE b.id_bill = @id_bill and b.agency = @id_agency and b.isActive = 1
-	WAITFOR DELAY '00:00:10'
 
 	UPDATE BILL WITH(XLOCK)
 	SET status = @status
@@ -339,6 +398,30 @@ COMMIT TRAN
 GO
 
 EXEC PROC_DEADLOCK_T2_TRUNGDUC N'bill_1', N'ag_1', N'sta_3'
+
+--============================================= FIX =============================================--
+--TRANSACTION 1 -- Quản lý 1 cập nhật tình trạng đơn hàng cho  id_bill  'X' tại chi nhánh 'Y'
+IF OBJECT_ID('PROC_DEADLOCK_T1_TRUNGDUC', N'P') IS NOT NULL DROP PROC PROC_DEADLOCK_T1_TRUNGDUC
+GO
+CREATE PROC PROC_DEADLOCK_T1_TRUNGDUC
+	@id_bill nchar(10),
+	@id_agency nchar(10),
+	@status nchar(10)
+AS
+BEGIN TRAN
+	SELECT * 
+	FROM BILL b WITH(NOLOCK)
+	WHERE b.id_bill = @id_bill and b.agency = @id_agency and b.isActive = 1
+	WAITFOR DELAY '00:00:10'
+
+	UPDATE BILL WITH(XLOCK)
+	SET status = @status
+	WHERE id_bill = @id_bill and agency = @id_agency and isActive = 1
+
+COMMIT TRAN
+GO
+
+EXEC PROC_DEADLOCK_T1_TRUNGDUC N'bill_1', N'ag_1', N'sta_4'
 
 --TRANSACTION 2 FIX --Quản lý 2 cập nhật tình trạng đơn hàng cho  id_bill  'X' tại chi nhánh 'Y'
 IF OBJECT_ID('PROC_DEADLOCK_T2_TRUNGDUC', N'P') IS NOT NULL DROP PROC PROC_DEADLOCK_T2_TRUNGDUC
@@ -352,7 +435,6 @@ BEGIN TRAN
 	SELECT * 
 	FROM BILL b WITH(NOLOCK)
 	WHERE b.id_bill = @id_bill and b.agency = @id_agency and b.isActive = 1
-	WAITFOR DELAY '00:00:10'
 
 	UPDATE BILL WITH(XLOCK)
 	SET status = @status
