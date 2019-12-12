@@ -50,7 +50,7 @@ namespace HuongVietRestaurant
             {
                 if (GetTypeOfAccount(result))
                 {
-                    fStaff f = new fStaff();
+                    fStaff f = new fStaff(username);
                     this.Hide();
                     f.ShowDialog();
                     this.Show();
