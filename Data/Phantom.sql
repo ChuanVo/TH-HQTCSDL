@@ -4,7 +4,7 @@ GO
 --============> PHANTOM <==========
 
 --ChuanVo
---Trong khi Khách hàng xem danh sách món ăn thì người quản lí chèn thêm món ăn.
+--Trong khi Khách hàng xem danh sách món ăn thì người quản lí chèn thêm món ăn vao menu.
 --TRANSACTION 1--
 IF OBJECT_ID('PROC_PHANTOM_T1_CHUANVO', 'P') IS NOT NULL DROP PROC PROC_PHANTOM_T1_CHUANVO
 GO
@@ -23,16 +23,13 @@ EXEC PROC_PHANTOM_T1_CHUANVO
 IF OBJECT_ID('PROC_PHANTOM_T2_CHUANVO', N'P') IS NOT NULL DROP PROC PROC_PHANTOM_T2_CHUANVO
 GO
 CREATE PROC PROC_PHANTOM_T2_CHUANVO
+	@id_agency nchar(10),
 	@id_dish nchar(10),
-	@id_type nchar(10),
-	@dish_name nvarchar(50),
-	@price int,
-	@image nvarchar(10),
-	@isActive int
+	@unit int
 AS
 BEGIN TRAN
-	INSERT [dbo].[DISH] ([id_dish], [type_dish], [dish_name], [price], [image], [isActive]) 
-	VALUES (@id_dish, @id_type, @dish_name, @price, @image, @isActive)	
+	INSERT [dbo].[MENU] ([id_agency], [id_dish], [unit], [isActive]) 
+	VALUES (@id_agency, @id_dish, @unit, 1)	
 COMMIT TRAN
 
 --FIX => TRANSACTION 1--
