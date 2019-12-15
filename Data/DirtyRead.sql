@@ -33,28 +33,28 @@ END
 -- TRANSACTION 2
 IF OBJECT_ID('PROC_DIRTYREAD_T2_F_CHUANVO', 'p') is not null DROP PROC PROC_DIRTYREAD_T2_F_CHUANVO
 GO
-CREATE PROC PROC_DIRTYREAD_T2_F_CHUANVO @id_dish nchar(10)
+CREATE PROC PROC_DIRTYREAD_T2_F_CHUANVO @id_agency nchar(10)
 AS
 BEGIN
 	BEGIN TRAN
 	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
-		SELECT * 
-		FROM DISH 
-		WHERE id_dish = @id_dish
+		SELECT M.id_agency, D.id_dish, M.unit, D.dish_name, D.type_dish, D.image, D.price
+		FROM MENU M JOIN DISH D 
+		ON id_agency = @id_agency AND M.id_dish = D.id_dish AND M.isActive = 1
 	COMMIT TRAN
 END
 
---FIX => TRANSACTION 2 (FIXED)
--- Handle: Use insolation level READ COMMITED to handle this error and it is default insolation level of sql server
+----FIX => TRANSACTION 2 (FIXED)
+---- Handle: Use insolation level READ COMMITED to handle this error and it is default insolation level of sql server
 IF OBJECT_ID('PROC_DIRTYREAD_T2_T_CHUANVO', 'p') is not null DROP PROC PROC_DIRTYREAD_T2_T_CHUANVO
 GO
-CREATE PROC PROC_DIRTYREAD_T2_T_CHUANVO @id_dish nchar(10)
+CREATE PROC PROC_DIRTYREAD_T2_T_CHUANVO @id_agency nchar(10)
 AS
 BEGIN
 	BEGIN TRAN
-		SELECT * 
-		FROM DISH 
-		WHERE id_dish = @id_dish and isActive = 1
+		SELECT M.id_agency, D.id_dish, M.unit, D.dish_name, D.type_dish, D.image, D.price
+		FROM MENU M JOIN DISH D 
+		ON id_agency = @id_agency AND M.id_dish = D.id_dish AND M.isActive = 1
 	COMMIT TRAN
 END
 
