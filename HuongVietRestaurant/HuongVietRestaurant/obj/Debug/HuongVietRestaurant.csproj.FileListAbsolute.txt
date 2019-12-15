@@ -1,0 +1,13 @@
+C:\Users\Lam\Desktop\HQTCSDL\HuongVietRestaurant\HuongVietRestaurant\bin\Debug\HuongVietRestaurant.exe.config
+C:\Users\Lam\Desktop\HQTCSDL\HuongVietRestaurant\HuongVietRestaurant\bin\Debug\HuongVietRestaurant.exe
+C:\Users\Lam\Desktop\HQTCSDL\HuongVietRestaurant\HuongVietRestaurant\bin\Debug\HuongVietRestaurant.pdb
+C:\Users\Lam\Desktop\HQTCSDL\HuongVietRestaurant\HuongVietRestaurant\obj\Debug\HuongVietRestaurant.csprojAssemblyReference.cache
+C:\Users\Lam\Desktop\HQTCSDL\HuongVietRestaurant\HuongVietRestaurant\obj\Debug\HuongVietRestaurant.fCart.resources
+C:\Users\Lam\Desktop\HQTCSDL\HuongVietRestaurant\HuongVietRestaurant\obj\Debug\HuongVietRestaurant.fCustomer.resources
+C:\Users\Lam\Desktop\HQTCSDL\HuongVietRestaurant\HuongVietRestaurant\obj\Debug\HuongVietRestaurant.fLogIn.resources
+C:\Users\Lam\Desktop\HQTCSDL\HuongVietRestaurant\HuongVietRestaurant\obj\Debug\HuongVietRestaurant.fStaff.resources
+C:\Users\Lam\Desktop\HQTCSDL\HuongVietRestaurant\HuongVietRestaurant\obj\Debug\HuongVietRestaurant.Properties.Resources.resources
+C:\Users\Lam\Desktop\HQTCSDL\HuongVietRestaurant\HuongVietRestaurant\obj\Debug\HuongVietRestaurant.csproj.GenerateResource.cache
+C:\Users\Lam\Desktop\HQTCSDL\HuongVietRestaurant\HuongVietRestaurant\obj\Debug\HuongVietRestaurant.csproj.CoreCompileInputs.cache
+C:\Users\Lam\Desktop\HQTCSDL\HuongVietRestaurant\HuongVietRestaurant\obj\Debug\HuongVietRestaurant.exe
+C:\Users\Lam\Desktop\HQTCSDL\HuongVietRestaurant\HuongVietRestaurant\obj\Debug\HuongVietRestaurant.pdb

@@ -41,7 +41,15 @@ namespace HuongVietRestaurant.DAO
 
         public void InsertBill(string id_bill, string id_agency)
         {
-            DataProvider.Instance.ExecuteNonQuery("exec USP_Insert_Bill @id_bill , @id_agency ", new object[] { id_bill, id_agency });
+            DataProvider.Instance.ExecuteNonQuery("exec PROC_PHANTOM_T2_TRUNGDUC @id_bill = '" + id_bill +
+                "', @agency = '" + id_agency +
+                "', @customer = null" + 
+                " , @status = null" +
+                " , @order = null" +
+                " , @payment_method = null" +
+                " , @total = 0 " +
+                " , @fee = null " +
+                " , @isActive  =  1" );
         }
 
         public string GetMaxIDBill()

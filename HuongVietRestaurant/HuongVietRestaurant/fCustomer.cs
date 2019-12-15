@@ -20,6 +20,7 @@ namespace HuongVietRestaurant
         public fCustomer()
         {
             InitializeComponent();
+            
             panelInfo.Hide();
 
         }
@@ -68,7 +69,8 @@ namespace HuongVietRestaurant
         {
             cboCategory.Enabled = true;
             cboCategory.Text = null;
-            
+            btnViewEnableFood.Enabled = true;
+            btnViewLess50.Enabled = true;
 
             ComboBox cbo = sender as ComboBox;
 
@@ -85,6 +87,10 @@ namespace HuongVietRestaurant
         {
             DTO.Menu info = ((sender as Button).Tag as DTO.Menu);
             txtFoodName.Text = info.FoodName;
+
+            //Byte[] i = (byte[])DataRow["hinhAnh"];
+            //MemoryStream stmBLOBData = new MemoryStream(i)
+            //ptbFood.BackgroundImage = Image.FromFile(info.Image);
             txtFoodInfo.Text = "Description: " + info.Image + Environment.NewLine
                 + "Price: " + info.Price + Environment.NewLine + "Remain amount: " + info.Unit;
             btnAddToCart.Tag = info.FoodID;
@@ -105,7 +111,7 @@ namespace HuongVietRestaurant
         {
             LoadCategory();
         }
-        
+
 
         private void cboCategory_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -152,10 +158,12 @@ namespace HuongVietRestaurant
                 string id_agency = selected.ID;
                 string id_bill = "bill_" + BillDAO.Instance.GetMaxIDBill();
 
+                
                 if (btnCart.Enabled == false)
                 {
                     BillDAO.Instance.InsertBill(id_bill, id_agency);
                     BillDetailDAO.Instance.InsertBillInfo(id_bill, id_food, unit);
+
                     btnCart.Tag = id_bill;
                     btnCart.Enabled = true;
                 }
@@ -165,7 +173,10 @@ namespace HuongVietRestaurant
 
 
                 }
+                MenuDAO.Instance.UpdateMenu(id_agency, id_food, unit);
                 numericUpDown1.Value = 0;
+                panelInfo.Hide();
+                LoadMenu(id_agency);
                 //MessageBox.Show("Success!","", MessageBoxButtons.OK);
             }
         }
@@ -178,6 +189,50 @@ namespace HuongVietRestaurant
             this.Show();
         }
         #endregion
+
+        private void ptbFood_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        //View unit >=1
+        private void button1_Click(object sender, EventArgs e)
+        {
+            List<Control> list = new List<Control>();
+            foreach (Control control in flpMenu.Controls)
+            {
+                list.Add(control);
+            }
+
+            foreach (Control control in list)
+            {
+                if ((int)((control.Tag) as DTO.Menu).Unit == 0)
+                {
+                    flpMenu.Controls.Remove(control);
+                    control.Dispose();
+                }
+            }
+
+        }
+
+        // View price < 50k
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            List<Control> list = new List<Control>();
+            foreach (Control control in flpMenu.Controls)
+            {
+                list.Add(control);
+            }
+
+            foreach (Control control in list){ 
+
+                if ((int)((control.Tag) as DTO.Menu).Price > 50000)
+                {
+                    flpMenu.Controls.Remove(control);
+                    control.Dispose();
+                }
+            }
+        }
     }
 
 

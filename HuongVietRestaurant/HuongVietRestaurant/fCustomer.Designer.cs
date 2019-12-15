@@ -37,6 +37,8 @@
             this.txtFoodInfo = new System.Windows.Forms.TextBox();
             this.ptbFood = new System.Windows.Forms.PictureBox();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.btnViewLess50 = new System.Windows.Forms.Button();
+            this.btnViewEnableFood = new System.Windows.Forms.Button();
             this.btnCart = new System.Windows.Forms.Button();
             this.cboCategory = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
@@ -136,9 +138,12 @@
             this.ptbFood.Size = new System.Drawing.Size(166, 165);
             this.ptbFood.TabIndex = 0;
             this.ptbFood.TabStop = false;
+            this.ptbFood.Click += new System.EventHandler(this.ptbFood_Click);
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.btnViewLess50);
+            this.panel2.Controls.Add(this.btnViewEnableFood);
             this.panel2.Controls.Add(this.btnCart);
             this.panel2.Controls.Add(this.cboCategory);
             this.panel2.Controls.Add(this.label2);
@@ -148,6 +153,28 @@
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(769, 85);
             this.panel2.TabIndex = 0;
+            // 
+            // btnViewLess50
+            // 
+            this.btnViewLess50.Enabled = false;
+            this.btnViewLess50.Location = new System.Drawing.Point(436, 48);
+            this.btnViewLess50.Name = "btnViewLess50";
+            this.btnViewLess50.Size = new System.Drawing.Size(159, 25);
+            this.btnViewLess50.TabIndex = 8;
+            this.btnViewLess50.Text = "View Price < 50k";
+            this.btnViewLess50.UseVisualStyleBackColor = true;
+            this.btnViewLess50.Click += new System.EventHandler(this.button1_Click_1);
+            // 
+            // btnViewEnableFood
+            // 
+            this.btnViewEnableFood.Enabled = false;
+            this.btnViewEnableFood.Location = new System.Drawing.Point(436, 14);
+            this.btnViewEnableFood.Name = "btnViewEnableFood";
+            this.btnViewEnableFood.Size = new System.Drawing.Size(159, 25);
+            this.btnViewEnableFood.TabIndex = 7;
+            this.btnViewEnableFood.Text = "View Unit > 0";
+            this.btnViewEnableFood.UseVisualStyleBackColor = true;
+            this.btnViewEnableFood.Click += new System.EventHandler(this.button1_Click);
             // 
             // btnCart
             // 
@@ -239,5 +266,7 @@
         private System.Windows.Forms.Button btnAddToCart;
         private System.Windows.Forms.NumericUpDown numericUpDown1;
         private System.Windows.Forms.TextBox txtFoodName;
+        private System.Windows.Forms.Button btnViewEnableFood;
+        private System.Windows.Forms.Button btnViewLess50;
     }
 }

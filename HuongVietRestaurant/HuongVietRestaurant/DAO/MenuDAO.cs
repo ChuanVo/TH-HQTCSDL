@@ -28,7 +28,7 @@ namespace HuongVietRestaurant.DAO
         {
             List<Menu> list = new List<Menu>();
 
-            string query = "USP_GET_MENU @id";
+            string query = "PROC_UNREPEATABLEREAD_T1_CHUAN @id_agency ";
             DataTable data = DataProvider.Instance.ExecuteQuery(query, new object[]{ agencyID });
 
             foreach (DataRow item in data.Rows)
@@ -38,6 +38,11 @@ namespace HuongVietRestaurant.DAO
             }
 
             return list;
+        }
+
+        public void UpdateMenu(string agencyID, string foodID, int unit)
+        {
+            DataProvider.Instance.ExecuteNonQuery("PROC_LOSTUPDATE_T1_ANHOA @id_agency , @id_dish , @unit ", new object[] { agencyID, foodID, unit });
         }
     }
 }
