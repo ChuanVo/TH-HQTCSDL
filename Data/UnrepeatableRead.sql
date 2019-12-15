@@ -8,18 +8,18 @@ GO
 --TRANSACTION 1--
 IF OBJECT_ID('PROC_UNREPEATABLEREAD_T1_CHUAN', 'P') IS NOT NULL DROP PROC PROC_UNREPEATABLEREAD_T1_CHUAN
 GO
-CREATE PROC PROC_UNREPEATABLEREAD_T1_CHUAN @id_dish nchar(10)
+CREATE PROC PROC_UNREPEATABLEREAD_T1_CHUAN @id_agency nchar(10)
 AS
 BEGIN TRAN
-	SELECT *
-	FROM DISH 
-	WHERE id_dish = @id_dish and d.isActive = 1
+	SELECT M.id_agency, D.id_dish, M.unit, D.dish_name, D.type_dish, D.image, D.price
+	FROM MENU M JOIN DISH D
+	ON id_agency = @id_agency AND M.id_dish = D.id_dish AND M.isActive =1
 	WAITFOR DELAY '00:00:15'
 
 
-	SELECT *
-	FROM DISH 
-	WHERE id_dish = @id_dish and d.isActive = 1
+	SELECT M.id_agency, D.id_dish, M.unit, D.dish_name, D.type_dish, D.image, D.price
+	FROM MENU M JOIN DISH D
+	ON id_agency = @id_agency AND M.id_dish = D.id_dish AND M.isActive =1
 
 COMMIT TRAN
 
@@ -37,17 +37,18 @@ COMMIT TRAN
 --FIX =>TRANSACTION 1--
 IF OBJECT_ID('PROC_UNREPEATABLEREAD_T1_CHUAN', N'P') IS NOT NULL DROP PROC PROC_UNREPEATABLEREAD_T1_CHUAN
 GO
-CREATE PROC PROC_UNREPEATABLEREAD_T1_CHUAN @id_dish nchar(10)
+CREATE PROC PROC_UNREPEATABLEREAD_T1_CHUAN @id_agency nchar(10)
 AS
 BEGIN TRAN
-	SELECT *
-	FROM DISH WITH (RepeatableRead)
-	WHERE id_dish = @id_dish and isActive = 1 
+	SELECT M.id_agency, D.id_dish, M.unit, D.dish_name, D.type_dish, D.image, D.price
+	FROM MENU M JOIN DISH D WITH (RepeatableRead)
+	ON id_agency = @id_agency AND M.id_dish = D.id_dish AND M.isActive =1
 	WAITFOR DELAY '00:00:15'
 
-	SELECT *
-	FROM DISH
-	WHERE id_dish = @id_dish and isActive = 1 
+
+	SELECT M.id_agency, D.id_dish, M.unit, D.dish_name, D.type_dish, D.image, D.price
+	FROM MENU M JOIN DISH D
+	ON id_agency = @id_agency AND M.id_dish = D.id_dish AND M.isActive =1
 
 COMMIT TRAN
 
@@ -56,18 +57,18 @@ COMMIT TRAN
 --TRANSACTION 1--
 IF OBJECT_ID('PROC_UNREPEATABLEREAD_T1_LAM', 'P') IS NOT NULL DROP PROC PROC_UNREPEATABLEREAD_T1_LAM
 GO
-CREATE PROC PROC_UNREPEATABLEREAD_T1_LAM @id_dish nchar(10)
+CREATE PROC PROC_UNREPEATABLEREAD_T1_LAM @id_agency nchar(10)
 AS
 BEGIN TRAN
-	SELECT *
-	FROM DISH 
-	WHERE id_dish = @id_dish and d.isActive = 1
+	SELECT M.id_agency, D.id_dish, M.unit, D.dish_name, D.type_dish, D.image, D.price
+	FROM MENU M JOIN DISH D
+	ON id_agency = @id_agency AND M.id_dish = D.id_dish AND M.isActive =1
 	WAITFOR DELAY '00:00:15'
 
 
-	SELECT *
-	FROM DISH 
-	WHERE id_dish = @id_dish and d.isActive = 1
+	SELECT M.id_agency, D.id_dish, M.unit, D.dish_name, D.type_dish, D.image, D.price
+	FROM MENU M JOIN DISH D
+	ON id_agency = @id_agency AND M.id_dish = D.id_dish AND M.isActive =1
 
 COMMIT TRAN
 
@@ -85,18 +86,18 @@ COMMIT TRAN
 --FIX =>TRANSACTION 1--
 IF OBJECT_ID('PROC_UNREPEATABLEREAD_T1_LAM', N'P') IS NOT NULL DROP PROC PROC_UNREPEATABLEREAD_T1_LAM
 GO
-CREATE PROC PROC_UNREPEATABLEREAD_T1_LAM @id_dish nchar(10)
+CREATE PROC PROC_UNREPEATABLEREAD_T1_LAM @id_agency nchar(10)
 AS
 BEGIN TRAN
-	SELECT *
-	FROM DISH WITH (RepeatableRead)
-	WHERE id_dish = @id_dish and isActive = 1 
+	SELECT M.id_agency, D.id_dish, M.unit, D.dish_name, D.type_dish, D.image, D.price
+	FROM MENU M JOIN DISH D WITH (RepeatableRead)
+	ON id_agency = @id_agency AND M.id_dish = D.id_dish AND M.isActive =1
 	WAITFOR DELAY '00:00:15'
 
-	SELECT *
-	FROM DISH
-	WHERE id_dish = @id_dish and isActive = 1 
 
+	SELECT M.id_agency, D.id_dish, M.unit, D.dish_name, D.type_dish, D.image, D.price
+	FROM MENU M JOIN DISH D
+	ON id_agency = @id_agency AND M.id_dish = D.id_dish AND M.isActive =1
 COMMIT TRAN
 
 --Lang
