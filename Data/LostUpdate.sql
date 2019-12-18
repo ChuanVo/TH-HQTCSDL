@@ -227,7 +227,7 @@ SET @unit0 = 0
 	FROM MENU M
 	WHERE M.id_agency = @id_agency AND M.id_dish = @id_dish
 
-	--WAITFOR DELAY '00:00:15'
+	WAITFOR DELAY '00:00:15'
 	SET @unit0 = @unit0 - @unit
 	UPDATE MENU
 	SET unit = @unit0

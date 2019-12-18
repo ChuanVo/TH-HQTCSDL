@@ -11,8 +11,9 @@ GO
 CREATE PROC PROC_PHANTOM_T1_CHUANVO @id_agency nchar(10)
 AS
 BEGIN TRAN
+
 	SELECT M.id_agency, D.id_dish, M.unit, D.dish_name, D.type_dish, D.image, D.price
-	FROM MENU M JOIN DISH D 
+	FROM MENU M JOIN DISH D with (RepeatableRead)
 	ON id_agency = @id_agency AND M.id_dish = D.id_dish AND M.isActive =1
 
 	WAITFOR DELAY '00:00:15'
@@ -31,25 +32,20 @@ BEGIN TRAN
 	VALUES (@id_agency, @id_dish, @unit, 1)	
 COMMIT TRAN
 
-exec PROC_PHANTOM_T1_CHUANVO 'ag_1'
-exec PROC_PHANTOM_T2_CHUANVO 'ag_1', 'dish_8', 88
-
 --FIX => TRANSACTION 1--
 IF OBJECT_ID('PROC_PHANTOM_T1_CHUANVO', 'P') IS NOT NULL DROP PROC PROC_PHANTOM_T1_CHUANVO
 GO
 CREATE PROC PROC_PHANTOM_T1_CHUANVO @id_agency nchar(10)
 AS
 BEGIN TRAN
-	SET TRAN ISOLATION LEVEL SERIALIZABLE
+
 	SELECT M.id_agency, D.id_dish, M.unit, D.dish_name, D.type_dish, D.image, D.price
-	FROM MENU M JOIN DISH D
+	FROM MENU M JOIN DISH D with (Serializable)
 	ON id_agency = @id_agency AND M.id_dish = D.id_dish AND M.isActive =1
 
-	WAITFOR DELAY '00:00:05'
+	--WAITFOR DELAY '00:00:15'
 
 COMMIT TRAN
-
-
 
 
 --Lang
@@ -157,13 +153,13 @@ COMMIT TRAN
 --TRANSACTION 1:
 IF OBJECT_ID('PROC_PHANTOM_T1_ANHOA', 'p') is not null DROP PROC PROC_PHANTOM_T1_ANHOA
 GO
-CREATE PROC PROC_PHANTOM_T1_ANHOA @id_agency nchar(10), @type_dish nchar(10)
+CREATE PROC PROC_PHANTOM_T1_ANHOA @id_agency nchar(10)
 AS
 BEGIN TRAN
 	SELECT M.id_agency, D.id_dish, M.unit, D.dish_name, D.type_dish, D.image, D.price
 	FROM MENU M JOIN DISH D
-	ON id_agency = @id_agency AND M.id_dish = D.id_dish AND M.isActive =1 AND D.type_dish = @type_dish
-	WAITFOR DELAY '00:00:15'
+	ON id_agency = @id_agency AND M.id_dish = D.id_dish AND M.isActive =1
+	--WAITFOR DELAY '00:00:15'
 COMMIT 
 
 --TRANSACTION 2:
@@ -179,20 +175,19 @@ COMMIT TRAN
 EXEC PROC_PHANTOM_T2_ANHOA 'ag_2', 'dish_3', 20
 
 --TRANSACTION 1 FIX:
-
-
 IF OBJECT_ID('PROC_PHANTOM_T1_ANHOA', 'p') is not null DROP PROC PROC_PHANTOM_T1_ANHOA
 GO
-CREATE PROC PROC_PHANTOM_T1_ANHOA @id_agency nchar(10), @type_dish nchar(10)
+CREATE PROC PROC_PHANTOM_T1_ANHOA @id_agency nchar(10)
 AS
 BEGIN TRAN
-	SET TRAN ISOLATION LEVEL SERIALIZABLE  --Giải quyết lỗi Phantom
-
+SET TRAN ISOLATION LEVEL SERIALIZABLE  --Giải quyết lỗi Phantom
 	SELECT M.id_agency, D.id_dish, M.unit, D.dish_name, D.type_dish, D.image, D.price
 	FROM MENU M JOIN DISH D
-	ON id_agency = @id_agency AND M.id_dish = D.id_dish AND M.isActive =1 AND D.type_dish = @type_dish
-	WAITFOR DELAY '00:00:15'
-COMMIT 
+	ON id_agency = @id_agency AND M.id_dish = D.id_dish AND M.isActive =1	WAITFOR DELAY '00:00:15'
+COMMIT TRAN
+EXEC PROC_PHANTOM_T1_ANHOA 'ag_1'
+
+
 
 --TrungDuc
 USE HuongVietRestaurant
@@ -210,7 +205,7 @@ BEGIN TRAN
 	SELECT COUNT(*) 
 	FROM BILL b
 	WHERE b.agency = @id_agency and b.isActive = 1
-	WAITFOR DELAY '00:00:07'
+	WAITFOR DELAY '00:00:10'
 COMMIT TRAN 
 
 EXEC PROC_PHANTOM_T1_TRUNGDUC N'ag_2'
@@ -251,8 +246,6 @@ BEGIN TRAN
 	WAITFOR DELAY '00:00:10'
 COMMIT TRAN 
 
-EXEC PROC_PHANTOM_T1_TRUNGDUC N'ag_1'
-
-exec PROC_PHANTOM_T2_TRUNGDUC 'aaaa', 'ag_1',null,null,null,null,0,null,1
+EXEC PROC_PHANTOM_T1_TRUNGDUC N'ag_2'
 
 
