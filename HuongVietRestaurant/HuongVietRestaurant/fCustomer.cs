@@ -15,11 +15,15 @@ namespace HuongVietRestaurant
     public partial class fCustomer : Form
     {
         fCart f = new fCart();
-        private string agencyID;
+        private string agencyID = null;
+        private string categoryID = null;
+
 
         public fCustomer()
         {
             InitializeComponent();
+            //LoadAgency();
+            //LoadCategory();
             
             panelInfo.Hide();
 
@@ -41,10 +45,10 @@ namespace HuongVietRestaurant
             cboCategory.DisplayMember = "Name";
         }
 
-        void LoadMenu(string agencyID)
+        void LoadMenu(string agencyID, string categoryID)
         {
             flpMenu.Controls.Clear();
-            List<DTO.Menu> list = MenuDAO.Instance.GetMenu(agencyID);
+            List<DTO.Menu> list = MenuDAO.Instance.GetMenu(agencyID, categoryID);
             foreach (DTO.Menu item in list)
             {
                 Button btn = new Button() { Width = MenuDAO.btnWidth, Height = MenuDAO.btnHeight };
@@ -67,20 +71,7 @@ namespace HuongVietRestaurant
         #region events
         private void cboAgency_SelectedIndexChanged(object sender, EventArgs e)
         {
-            cboCategory.Enabled = true;
-            cboCategory.Text = null;
-            btnViewEnableFood.Enabled = true;
-            btnViewLess50.Enabled = true;
-
-            ComboBox cbo = sender as ComboBox;
-
-            if (cbo.SelectedItem == null) return;
-
-            Agency selected = cbo.SelectedItem as Agency;
-
-            agencyID = selected.ID;
-
-            LoadMenu(agencyID);
+           
         }
 
         private void btn_Click(object sender, EventArgs e)
@@ -115,7 +106,6 @@ namespace HuongVietRestaurant
 
         private void cboCategory_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string categoryID;
             ComboBox cbo = sender as ComboBox;
 
             if (cbo.SelectedItem == null) return;
@@ -123,22 +113,22 @@ namespace HuongVietRestaurant
             FoodCategory selected = cbo.SelectedItem as FoodCategory;
 
             categoryID = selected.ID;
-            LoadMenu(agencyID);
+            //LoadMenu(agencyID);
 
-            List<Control> list = new List<Control>();
-            foreach (Control control in flpMenu.Controls)
-            {
-                list.Add(control);
-            }
+            //List<Control> list = new List<Control>();
+            //foreach (Control control in flpMenu.Controls)
+            //{
+            //    list.Add(control);
+            //}
 
-            foreach (Control control in list)
-            {
-                if(String.Compare(((control.Tag) as DTO.Menu).CategoryID.ToString(), categoryID, true) != 0)
-                {
-                    flpMenu.Controls.Remove(control);
-                    control.Dispose();
-                }
-            }
+            //foreach (Control control in list)
+            //{
+            //    if(String.Compare(((control.Tag) as DTO.Menu).CategoryID.ToString(), categoryID, true) != 0)
+            //    {
+            //        flpMenu.Controls.Remove(control);
+            //        control.Dispose();
+            //    }
+            //}
 
         }
 
@@ -166,6 +156,7 @@ namespace HuongVietRestaurant
 
                     btnCart.Tag = id_bill;
                     btnCart.Enabled = true;
+                    btnCart.BackColor = Color.Aqua;
                 }
                 else
                 {
@@ -176,7 +167,7 @@ namespace HuongVietRestaurant
                 MenuDAO.Instance.UpdateMenu(id_agency, id_food, unit);
                 numericUpDown1.Value = 0;
                 panelInfo.Hide();
-                LoadMenu(id_agency);
+                LoadMenu(id_agency, categoryID);
                 //MessageBox.Show("Success!","", MessageBoxButtons.OK);
             }
         }
@@ -232,6 +223,30 @@ namespace HuongVietRestaurant
                     control.Dispose();
                 }
             }
+        }
+
+        private void cboAgency_SelectedValueChanged(object sender, EventArgs e)
+        {
+            cboCategory.Enabled = true;
+            cboCategory.Text = null;
+            btnViewEnableFood.Enabled = true;
+            btnViewLess50.Enabled = true;
+
+            ComboBox cbo = sender as ComboBox;
+
+            if (cbo.SelectedItem == null) return;
+
+            Agency selected = cbo.SelectedItem as Agency;
+
+            agencyID = selected.ID;
+            btnView.Enabled = true;
+            
+        }
+
+        private void btnView_Click(object sender, EventArgs e)
+        {
+            LoadMenu(agencyID, categoryID);
+
         }
     }
 

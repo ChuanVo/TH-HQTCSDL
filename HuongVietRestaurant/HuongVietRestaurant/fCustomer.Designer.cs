@@ -44,6 +44,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.cboAgency = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.btnView = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panelInfo.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
@@ -56,17 +57,19 @@
             this.panel1.Controls.Add(this.flpMenu);
             this.panel1.Controls.Add(this.panelInfo);
             this.panel1.Controls.Add(this.panel2);
-            this.panel1.Location = new System.Drawing.Point(4, 1);
+            this.panel1.Location = new System.Drawing.Point(3, 1);
+            this.panel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(781, 571);
+            this.panel1.Size = new System.Drawing.Size(586, 464);
             this.panel1.TabIndex = 0;
             // 
             // flpMenu
             // 
             this.flpMenu.AutoScroll = true;
-            this.flpMenu.Location = new System.Drawing.Point(8, 93);
+            this.flpMenu.Location = new System.Drawing.Point(6, 76);
+            this.flpMenu.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.flpMenu.Name = "flpMenu";
-            this.flpMenu.Size = new System.Drawing.Size(420, 478);
+            this.flpMenu.Size = new System.Drawing.Size(315, 388);
             this.flpMenu.TabIndex = 0;
             // 
             // panelInfo
@@ -76,19 +79,21 @@
             this.panelInfo.Controls.Add(this.numericUpDown1);
             this.panelInfo.Controls.Add(this.txtFoodInfo);
             this.panelInfo.Controls.Add(this.ptbFood);
-            this.panelInfo.Location = new System.Drawing.Point(434, 93);
+            this.panelInfo.Location = new System.Drawing.Point(326, 76);
+            this.panelInfo.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.panelInfo.Name = "panelInfo";
-            this.panelInfo.Size = new System.Drawing.Size(340, 478);
+            this.panelInfo.Size = new System.Drawing.Size(255, 388);
             this.panelInfo.TabIndex = 1;
             // 
             // txtFoodName
             // 
             this.txtFoodName.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.txtFoodName.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtFoodName.Location = new System.Drawing.Point(22, 189);
+            this.txtFoodName.Location = new System.Drawing.Point(16, 154);
+            this.txtFoodName.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.txtFoodName.Name = "txtFoodName";
             this.txtFoodName.ReadOnly = true;
-            this.txtFoodName.Size = new System.Drawing.Size(302, 23);
+            this.txtFoodName.Size = new System.Drawing.Size(226, 19);
             this.txtFoodName.TabIndex = 6;
             this.txtFoodName.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
@@ -97,9 +102,10 @@
             this.btnAddToCart.BackColor = System.Drawing.SystemColors.Control;
             this.btnAddToCart.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnAddToCart.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnAddToCart.Location = new System.Drawing.Point(164, 387);
+            this.btnAddToCart.Location = new System.Drawing.Point(123, 314);
+            this.btnAddToCart.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnAddToCart.Name = "btnAddToCart";
-            this.btnAddToCart.Size = new System.Drawing.Size(162, 82);
+            this.btnAddToCart.Size = new System.Drawing.Size(122, 67);
             this.btnAddToCart.TabIndex = 5;
             this.btnAddToCart.Text = "Add to Cart";
             this.btnAddToCart.UseVisualStyleBackColor = false;
@@ -108,14 +114,15 @@
             // numericUpDown1
             // 
             this.numericUpDown1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.numericUpDown1.Location = new System.Drawing.Point(37, 418);
+            this.numericUpDown1.Location = new System.Drawing.Point(28, 340);
+            this.numericUpDown1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.numericUpDown1.Minimum = new decimal(new int[] {
             100,
             0,
             0,
             -2147483648});
             this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(110, 27);
+            this.numericUpDown1.Size = new System.Drawing.Size(82, 23);
             this.numericUpDown1.TabIndex = 3;
             this.numericUpDown1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
@@ -123,25 +130,28 @@
             // 
             this.txtFoodInfo.BackColor = System.Drawing.Color.White;
             this.txtFoodInfo.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtFoodInfo.Location = new System.Drawing.Point(22, 227);
+            this.txtFoodInfo.Location = new System.Drawing.Point(16, 184);
+            this.txtFoodInfo.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.txtFoodInfo.Multiline = true;
             this.txtFoodInfo.Name = "txtFoodInfo";
             this.txtFoodInfo.ReadOnly = true;
-            this.txtFoodInfo.Size = new System.Drawing.Size(302, 146);
+            this.txtFoodInfo.Size = new System.Drawing.Size(228, 119);
             this.txtFoodInfo.TabIndex = 2;
             // 
             // ptbFood
             // 
             this.ptbFood.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.ptbFood.Location = new System.Drawing.Point(91, 13);
+            this.ptbFood.Location = new System.Drawing.Point(68, 11);
+            this.ptbFood.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.ptbFood.Name = "ptbFood";
-            this.ptbFood.Size = new System.Drawing.Size(166, 165);
+            this.ptbFood.Size = new System.Drawing.Size(125, 134);
             this.ptbFood.TabIndex = 0;
             this.ptbFood.TabStop = false;
             this.ptbFood.Click += new System.EventHandler(this.ptbFood_Click);
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.btnView);
             this.panel2.Controls.Add(this.btnViewLess50);
             this.panel2.Controls.Add(this.btnViewEnableFood);
             this.panel2.Controls.Add(this.btnCart);
@@ -149,17 +159,19 @@
             this.panel2.Controls.Add(this.label2);
             this.panel2.Controls.Add(this.cboAgency);
             this.panel2.Controls.Add(this.label1);
-            this.panel2.Location = new System.Drawing.Point(6, 7);
+            this.panel2.Location = new System.Drawing.Point(4, 6);
+            this.panel2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(769, 85);
+            this.panel2.Size = new System.Drawing.Size(577, 69);
             this.panel2.TabIndex = 0;
             // 
             // btnViewLess50
             // 
             this.btnViewLess50.Enabled = false;
-            this.btnViewLess50.Location = new System.Drawing.Point(436, 48);
+            this.btnViewLess50.Location = new System.Drawing.Point(379, 39);
+            this.btnViewLess50.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnViewLess50.Name = "btnViewLess50";
-            this.btnViewLess50.Size = new System.Drawing.Size(159, 25);
+            this.btnViewLess50.Size = new System.Drawing.Size(119, 20);
             this.btnViewLess50.TabIndex = 8;
             this.btnViewLess50.Text = "View Price < 50k";
             this.btnViewLess50.UseVisualStyleBackColor = true;
@@ -168,9 +180,10 @@
             // btnViewEnableFood
             // 
             this.btnViewEnableFood.Enabled = false;
-            this.btnViewEnableFood.Location = new System.Drawing.Point(436, 14);
+            this.btnViewEnableFood.Location = new System.Drawing.Point(379, 11);
+            this.btnViewEnableFood.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnViewEnableFood.Name = "btnViewEnableFood";
-            this.btnViewEnableFood.Size = new System.Drawing.Size(159, 25);
+            this.btnViewEnableFood.Size = new System.Drawing.Size(119, 20);
             this.btnViewEnableFood.TabIndex = 7;
             this.btnViewEnableFood.Text = "View Unit > 0";
             this.btnViewEnableFood.UseVisualStyleBackColor = true;
@@ -180,9 +193,10 @@
             // 
             this.btnCart.Enabled = false;
             this.btnCart.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnCart.Location = new System.Drawing.Point(606, 0);
+            this.btnCart.Location = new System.Drawing.Point(504, 0);
+            this.btnCart.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnCart.Name = "btnCart";
-            this.btnCart.Size = new System.Drawing.Size(146, 82);
+            this.btnCart.Size = new System.Drawing.Size(68, 67);
             this.btnCart.TabIndex = 4;
             this.btnCart.Text = "VIEW CART";
             this.btnCart.UseVisualStyleBackColor = true;
@@ -192,9 +206,10 @@
             // 
             this.cboCategory.Enabled = false;
             this.cboCategory.FormattingEnabled = true;
-            this.cboCategory.Location = new System.Drawing.Point(188, 48);
+            this.cboCategory.Location = new System.Drawing.Point(141, 39);
+            this.cboCategory.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.cboCategory.Name = "cboCategory";
-            this.cboCategory.Size = new System.Drawing.Size(234, 24);
+            this.cboCategory.Size = new System.Drawing.Size(176, 21);
             this.cboCategory.TabIndex = 3;
             this.cboCategory.DropDown += new System.EventHandler(this.cboCategory_DropDown);
             this.cboCategory.SelectedIndexChanged += new System.EventHandler(this.cboCategory_SelectedIndexChanged);
@@ -203,38 +218,56 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(13, 47);
+            this.label2.Location = new System.Drawing.Point(10, 38);
+            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(158, 24);
+            this.label2.Size = new System.Drawing.Size(126, 18);
             this.label2.TabIndex = 2;
             this.label2.Text = "Choose category:";
             // 
             // cboAgency
             // 
             this.cboAgency.FormattingEnabled = true;
-            this.cboAgency.Location = new System.Drawing.Point(188, 13);
+            this.cboAgency.Location = new System.Drawing.Point(141, 11);
+            this.cboAgency.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.cboAgency.Name = "cboAgency";
-            this.cboAgency.Size = new System.Drawing.Size(234, 24);
+            this.cboAgency.Size = new System.Drawing.Size(176, 21);
             this.cboAgency.TabIndex = 1;
             this.cboAgency.DropDown += new System.EventHandler(this.cboAgency_DropDown);
             this.cboAgency.SelectedIndexChanged += new System.EventHandler(this.cboAgency_SelectedIndexChanged);
+            this.cboAgency.SelectedValueChanged += new System.EventHandler(this.cboAgency_SelectedValueChanged);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(13, 14);
+            this.label1.Location = new System.Drawing.Point(10, 11);
+            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(148, 24);
+            this.label1.Size = new System.Drawing.Size(116, 18);
             this.label1.TabIndex = 0;
             this.label1.Text = "Choose agency:";
             // 
+            // btnView
+            // 
+            this.btnView.Enabled = false;
+            this.btnView.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnView.Location = new System.Drawing.Point(321, 2);
+            this.btnView.Margin = new System.Windows.Forms.Padding(2);
+            this.btnView.Name = "btnView";
+            this.btnView.Size = new System.Drawing.Size(54, 58);
+            this.btnView.TabIndex = 9;
+            this.btnView.Text = "xem";
+            this.btnView.UseVisualStyleBackColor = true;
+            this.btnView.Click += new System.EventHandler(this.btnView_Click);
+            // 
             // fCustomer
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(786, 576);
+            this.ClientSize = new System.Drawing.Size(590, 468);
             this.Controls.Add(this.panel1);
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "fCustomer";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Order - Huong Viet Restaurant";
@@ -268,5 +301,6 @@
         private System.Windows.Forms.TextBox txtFoodName;
         private System.Windows.Forms.Button btnViewEnableFood;
         private System.Windows.Forms.Button btnViewLess50;
+        private System.Windows.Forms.Button btnView;
     }
 }

@@ -24,12 +24,21 @@ namespace HuongVietRestaurant.DAO
 
         private MenuDAO() { }
 
-        public List<Menu> GetMenu(string agencyID)
+        public List<Menu> GetMenu(string agencyID, string categoryID)
         {
             List<Menu> list = new List<Menu>();
+            string query;
+            if (categoryID == null)
+            {
+                query = "PROC_UNREPEATABLEREAD_T1_CHUAN @id_agency = '" + agencyID + "'";
+            }
+            else
+            {
+                query = "PROC_PHANTOM_T1_ANHOA @id_agency = '" + agencyID + "', @type_dish = N'" + categoryID + "'";
+            }
 
-            string query = "PROC_UNREPEATABLEREAD_T1_CHUAN @id_agency ";
-            DataTable data = DataProvider.Instance.ExecuteQuery(query, new object[]{ agencyID });
+            //string query = "PROC_PHANTOM_T1_CHUANVO @id_agency ";
+            DataTable data = DataProvider.Instance.ExecuteQuery_TwoTable(query);
 
             foreach (DataRow item in data.Rows)
             {

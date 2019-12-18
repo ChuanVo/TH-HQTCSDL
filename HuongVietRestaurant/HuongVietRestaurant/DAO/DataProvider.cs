@@ -20,7 +20,7 @@ namespace HuongVietRestaurant.DAO
 
         private DataProvider() { }
 
-        private string connectionSTR = "Data Source=DANGLAM;Initial Catalog=HuongVietRestaurant;Integrated Security=True";
+        private string connectionSTR = @"Data Source=.\SQL2014;Initial Catalog=HuongVietRestaurant;Integrated Security=True";
 
         public DataTable ExecuteQuery(string query, object[] parameter = null)
         {
@@ -54,6 +54,40 @@ namespace HuongVietRestaurant.DAO
             }
 
             return data;
+        }
+
+        public DataTable ExecuteQuery_TwoTable(string query, object[] parameter = null)
+        {
+            DataSet data = new DataSet();
+
+            using (SqlConnection connection = new SqlConnection(connectionSTR))
+            {
+                connection.Open();
+
+                SqlCommand command = new SqlCommand(query, connection);
+
+                if (parameter != null)
+                {
+                    string[] listPara = query.Split(' ');
+                    int i = 0;
+                    foreach (string item in listPara)
+                    {
+                        if (item.Contains('@'))
+                        {
+                            command.Parameters.AddWithValue(item, parameter[i]);
+                            i++;
+                        }
+                    }
+                }
+
+                SqlDataAdapter adapter = new SqlDataAdapter(command);
+
+                adapter.Fill(data);
+
+                connection.Close();
+            }
+
+            return data.Tables[1];
         }
 
         public int ExecuteNonQuery(string query, object[] parameter = null)
