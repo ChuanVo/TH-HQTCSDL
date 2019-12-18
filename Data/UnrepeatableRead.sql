@@ -163,7 +163,7 @@ EXEC PROC_UNREPEATABLEREAD_T1_LANG N'td_1'
 
 --TrungDuc
 --Khách A xem danh sách các món ăn tại chi nhánh 1 có  SL >=1,
--- khách B mua hết 1 món trong đó ( update SL =0)
+-- khách B mua hết 1 món trong đó ( update SL = 0)
 --TRANSACTION 1--
 IF OBJECT_ID('PROC_UNREPEATABLEREAD_T1_TRUNGDUC', N'P') IS NOT NULL DROP PROC PROC_UNREPEATABLEREAD_T1_TRUNGDUC
 GO
@@ -171,16 +171,16 @@ CREATE PROC PROC_UNREPEATABLEREAD_T1_TRUNGDUC
 	@id_agency nchar(10)
 AS
 BEGIN TRAN
-	SELECT mn.id_agency, COUNT(*) 
-	FROM MENU mn
-	WHERE mn.id_agency = @id_agency and mn.isActive = 1
-	GROUP BY mn.id_agency
-	HAVING COUNT(*) >= 1
-	WAITFOR DELAY '00:00:0'
 
-	SELECT *
-	FROM MENU mn1
-	WHERE mn1.id_agency = @id_agency and mn1.isActive = 1 and mn1.unit >= 1
+	SELECT M.id_agency, D.id_dish, M.unit, D.dish_name, D.type_dish, D.image, D.price
+	FROM MENU M JOIN DISH D 
+	ON id_agency = @id_agency AND M.id_dish = D.id_dish AND M.isActive = 1 AND M.unit >= 1
+
+	WAITFOR DELAY '00:00:15'
+
+	SELECT M.id_agency, D.id_dish, M.unit, D.dish_name, D.type_dish, D.image, D.price
+	FROM MENU M JOIN DISH D 
+	ON id_agency = @id_agency AND M.id_dish = D.id_dish AND M.isActive = 1 AND M.unit >= 1
 	
 COMMIT TRAN
 GO
@@ -211,16 +211,17 @@ CREATE PROC PROC_UNREPEATABLEREAD_T1_TRUNGDUC
 	@id_agency nchar(10)
 AS
 BEGIN TRAN
-	SELECT mn.id_agency, COUNT(*) 
-	FROM MENU mn WITH (RepeatableRead)
-	WHERE mn.id_agency = @id_agency and mn.isActive = 1
-	GROUP BY mn.id_agency
-	HAVING COUNT(*) >= 1
-	WAITFOR DELAY '00:00:0'
+SET TRAN ISOLATION LEVEL REPEATABLE READ
 
-	SELECT *
-	FROM MENU mn1
-	WHERE mn1.id_agency = @id_agency and mn1.isActive = 1 and mn1.unit >= 1
+	SELECT M.id_agency, D.id_dish, M.unit, D.dish_name, D.type_dish, D.image, D.price
+	FROM MENU M JOIN DISH D 
+	ON id_agency = @id_agency AND M.id_dish = D.id_dish AND M.isActive = 1 AND M.unit >= 1
+
+	WAITFOR DELAY '00:00:15'
+
+	SELECT M.id_agency, D.id_dish, M.unit, D.dish_name, D.type_dish, D.image, D.price
+	FROM MENU M JOIN DISH D 
+	ON id_agency = @id_agency AND M.id_dish = D.id_dish AND M.isActive = 1 AND M.unit >=1
 	
 COMMIT TRAN
 GO
@@ -235,15 +236,15 @@ GO
 CREATE PROC PROC_UNREPEATABLEREAD_T1_ANHOA @id_agency nchar(10), @price int
 AS
 BEGIN TRAN
-	SELECT D.id_dish, T.type_dish_name, D.dish_name, A.agency_name, M.unit, D.price
-	FROM DISH D, AGENCY A, MENU M, TYPE_DISH T
-	WHERE T.id_type_dish = D.type_dish AND M.id_dish = D.id_dish AND M.id_agency = A.id_agency AND D.price <= @price
-	ORDER BY D.price ASC
+	SELECT M.id_agency, D.id_dish, M.unit, D.dish_name, D.type_dish, D.image, D.price
+	FROM MENU M JOIN DISH D 
+	ON id_agency = @id_agency AND M.id_dish = D.id_dish AND M.isActive = 1 AND D.price < @price
+
 	WAITFOR DELAY '00:00:15'
-	SELECT D.id_dish, T.type_dish_name, D.dish_name, A.agency_name, M.unit, D.price
-	FROM DISH D, AGENCY A, MENU M, TYPE_DISH T
-	WHERE T.id_type_dish = D.type_dish AND M.id_dish = D.id_dish AND M.id_agency = A.id_agency AND D.price <= @price
-	ORDER BY D.price ASC
+
+	SELECT M.id_agency, D.id_dish, M.unit, D.dish_name, D.type_dish, D.image, D.price
+	FROM MENU M JOIN DISH D 
+	ON id_agency = @id_agency AND M.id_dish = D.id_dish AND M.isActive = 1 AND D.price < @price
 COMMIT TRAN  
 EXEC PROC_UNREPEATABLEREAD_T1_ANHOA 'ag_1', 50000
 
@@ -266,14 +267,14 @@ CREATE PROC PROC_UNREPEATABLEREAD_T1_ANHOA @id_agency nchar(10), @price int
 AS
 BEGIN TRAN
 SET TRAN ISOLATION LEVEL REPEATABLE READ
-	SELECT D.id_dish, T.type_dish_name, D.dish_name, A.agency_name, M.unit, D.price
-	FROM DISH D, AGENCY A, MENU M, TYPE_DISH T
-	WHERE T.id_type_dish = D.type_dish AND M.id_dish = D.id_dish AND M.id_agency = A.id_agency AND D.price <= @price
-	ORDER BY D.price ASC
-	WAITFOR DELAY '00:00:15'
-	SELECT D.id_dish, T.type_dish_name, D.dish_name, A.agency_name, M.unit, D.price
-	FROM DISH D, AGENCY A, MENU M, TYPE_DISH T
-	WHERE T.id_type_dish = D.type_dish AND M.id_dish = D.id_dish AND M.id_agency = A.id_agency AND D.price <= @price
-	ORDER BY D.price ASC
+	SELECT M.id_agency, D.id_dish, M.unit, D.dish_name, D.type_dish, D.image, D.price
+	FROM MENU M JOIN DISH D 
+	ON id_agency = @id_agency AND M.id_dish = D.id_dish AND M.isActive = 1 AND D.price < @price
+
+	--WAITFOR DELAY '00:00:15'
+
+	SELECT M.id_agency, D.id_dish, M.unit, D.dish_name, D.type_dish, D.image, D.price
+	FROM MENU M JOIN DISH D 
+	ON id_agency = @id_agency AND M.id_dish = D.id_dish AND M.isActive = 1 AND D.price < @price
 COMMIT TRAN     
 EXEC PROC_UNREPEATABLEREAD_T1_ANHOA 'ag_1', 50000
