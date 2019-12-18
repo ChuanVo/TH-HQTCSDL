@@ -37,7 +37,30 @@ namespace HuongVietRestaurant.DAO
                 query = "PROC_PHANTOM_T1_ANHOA @id_agency = '" + agencyID + "', @type_dish = N'" + categoryID + "'";
             }
 
-            //string query = "PROC_PHANTOM_T1_CHUANVO @id_agency ";
+            DataTable data = DataProvider.Instance.ExecuteQuery(query);
+
+            foreach (DataRow item in data.Rows)
+            {
+                Menu menu = new Menu(item);
+                list.Add(menu);
+            }
+
+            return list;
+        }
+
+        public List<Menu> GetMenuWithCondition(string agencyID, string condition)
+        {
+            List<Menu> list = new List<Menu>();
+            string query ="";
+            if (condition == "0")
+            {
+                query = "PROC_UNREPEATABLEREAD_T1_TRUNGDUC @id_agency = '" + agencyID + "'";
+            }
+            else
+            {
+                query = "PROC_UNREPEATABLEREAD_T1_ANHOA @id_agency = '" + agencyID + "', @price = 50000 ";
+            }
+
             DataTable data = DataProvider.Instance.ExecuteQuery_TwoTable(query);
 
             foreach (DataRow item in data.Rows)
@@ -48,6 +71,7 @@ namespace HuongVietRestaurant.DAO
 
             return list;
         }
+
 
         public void UpdateMenu(string agencyID, string foodID, int unit)
         {

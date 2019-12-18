@@ -66,6 +66,27 @@ namespace HuongVietRestaurant
             }
         }
 
+        void LoadMenuWithCondition(string agencyID, string condition)
+        {
+            flpMenu.Controls.Clear();
+            List<DTO.Menu> list = MenuDAO.Instance.GetMenuWithCondition(agencyID, condition);
+            foreach (DTO.Menu item in list)
+            {
+                Button btn = new Button() { Width = MenuDAO.btnWidth, Height = MenuDAO.btnHeight };
+                //btn.Image = new Bitmap(Application.StartupPath + item.Image);
+
+                btn.Click += btn_Click;
+                btn.Tag = item;
+
+
+                btn.Text = item.FoodName + "\n" + item.Price + "\nRemain: " + item.Unit;
+
+
+
+                flpMenu.Controls.Add(btn);
+            }
+        }
+
         #endregion
 
         #region events
@@ -168,7 +189,7 @@ namespace HuongVietRestaurant
                 numericUpDown1.Value = 0;
                 panelInfo.Hide();
                 LoadMenu(id_agency, categoryID);
-                //MessageBox.Show("Success!","", MessageBoxButtons.OK);
+                MessageBox.Show("Success!","", MessageBoxButtons.OK);
             }
         }
 
@@ -189,40 +210,14 @@ namespace HuongVietRestaurant
         //View unit >=1
         private void button1_Click(object sender, EventArgs e)
         {
-            List<Control> list = new List<Control>();
-            foreach (Control control in flpMenu.Controls)
-            {
-                list.Add(control);
-            }
-
-            foreach (Control control in list)
-            {
-                if ((int)((control.Tag) as DTO.Menu).Unit == 0)
-                {
-                    flpMenu.Controls.Remove(control);
-                    control.Dispose();
-                }
-            }
+            LoadMenuWithCondition(agencyID, "0");
 
         }
 
         // View price < 50k
         private void button1_Click_1(object sender, EventArgs e)
         {
-            List<Control> list = new List<Control>();
-            foreach (Control control in flpMenu.Controls)
-            {
-                list.Add(control);
-            }
-
-            foreach (Control control in list){ 
-
-                if ((int)((control.Tag) as DTO.Menu).Price > 50000)
-                {
-                    flpMenu.Controls.Remove(control);
-                    control.Dispose();
-                }
-            }
+            LoadMenuWithCondition(agencyID, "1");
         }
 
         private void cboAgency_SelectedValueChanged(object sender, EventArgs e)

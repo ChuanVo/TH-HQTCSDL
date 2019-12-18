@@ -37,6 +37,7 @@ namespace HuongVietRestaurant.DAO
             return dt;
         }
 
+
         public void InsertBillInfo(string idBill, string idFood, int unit)
         {
             DataProvider.Instance.ExecuteNonQuery("exec USP_Insert_Bill_Detail @id_bill , @id_food , @unit ", new object[] { idBill, idFood, unit });
