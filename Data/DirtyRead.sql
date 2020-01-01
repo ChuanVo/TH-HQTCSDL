@@ -227,9 +227,6 @@ SET TRAN ISOLATION LEVEL READ COMMITTED  --Giải quyết lỗi DirtyRead
 COMMIT TRAN
 EXEC PROC_DIRTYREAD_T2_ANHOA 'ag_1'
 
-USE HuongVietRestaurant
-GO
-
 --TRUNGDUC
 -- Mô tả: Quản lý cửa hàng cập nhật position cho nhân viên cấp dưới (chưa commit) thì nhân viên khác vào xem thông tin của nhân viên được cập nhật
 
