@@ -33,28 +33,28 @@ END
 -- TRANSACTION 2
 IF OBJECT_ID('PROC_DIRTYREAD_T2_F_CHUANVO', 'p') is not null DROP PROC PROC_DIRTYREAD_T2_F_CHUANVO
 GO
-CREATE PROC PROC_DIRTYREAD_T2_F_CHUANVO @id_dish nchar(10)
+CREATE PROC PROC_DIRTYREAD_T2_F_CHUANVO @id_agency nchar(10)
 AS
 BEGIN
 	BEGIN TRAN
 	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
-		SELECT * 
-		FROM DISH 
-		WHERE id_dish = @id_dish
+		SELECT M.id_agency, D.id_dish, M.unit, D.dish_name, D.type_dish, D.image, D.price
+		FROM MENU M JOIN DISH D 
+		ON id_agency = @id_agency AND M.id_dish = D.id_dish AND M.isActive = 1
 	COMMIT TRAN
 END
 
---FIX => TRANSACTION 2 (FIXED)
--- Handle: Use insolation level READ COMMITED to handle this error and it is default insolation level of sql server
+----FIX => TRANSACTION 2 (FIXED)
+---- Handle: Use insolation level READ COMMITED to handle this error and it is default insolation level of sql server
 IF OBJECT_ID('PROC_DIRTYREAD_T2_T_CHUANVO', 'p') is not null DROP PROC PROC_DIRTYREAD_T2_T_CHUANVO
 GO
-CREATE PROC PROC_DIRTYREAD_T2_T_CHUANVO @id_dish nchar(10)
+CREATE PROC PROC_DIRTYREAD_T2_T_CHUANVO @id_agency nchar(10)
 AS
 BEGIN
 	BEGIN TRAN
-		SELECT * 
-		FROM DISH 
-		WHERE id_dish = @id_dish and isActive = 1
+		SELECT M.id_agency, D.id_dish, M.unit, D.dish_name, D.type_dish, D.image, D.price
+		FROM MENU M JOIN DISH D 
+		ON id_agency = @id_agency AND M.id_dish = D.id_dish AND M.isActive = 1
 	COMMIT TRAN
 END
 
@@ -86,43 +86,45 @@ GO
 EXEC PROC_DIRTYREAD_T1_LANG 'dish_5', ''
 
 --TRANSACTION 2 --
+--TRANSACTION 2 --
 IF OBJECT_ID('PROC_DIRTYREAD_T2_LANG', N'P') IS NOT NULL DROP PROC PROC_DIRTYREAD_T2_LANG
 GO
 CREATE PROC PROC_DIRTYREAD_T2_LANG
-	@id_dish nchar(10)
+	@id_agency nchar(10)
 AS
 BEGIN TRAN
 	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
-	SELECT *
-	FROM DISH 
-	WHERE id_dish = @id_dish
+	SELECT M.id_agency, D.id_dish, M.unit, D.dish_name, D.type_dish, D.image, D.price
+	FROM MENU M JOIN DISH D 
+	ON id_agency = @id_agency AND M.id_dish = D.id_dish AND M.isActive = 1
 COMMIT TRAN
 GO
 
-EXEC PROC_DIRTYREAD_T2_LANG 'dish_5'
+----EXEC PROC_DIRTYREAD_T2_LANG 'dish_5'
 
 -- TRANSACTION 2 FIX --
 IF OBJECT_ID('PROC_DIRTYREAD_T2_LANG', N'P') IS NOT NULL DROP PROC PROC_DIRTYREAD_T2_LANG
 GO
 CREATE PROC PROC_DIRTYREAD_T2_LANG
-	@id_dish nchar(10)
+	@id_agency nchar(10)
 AS
 BEGIN TRAN
 	SET TRANSACTION ISOLATION LEVEL READ COMMITTED
-	SELECT *
-	FROM DISH with (RepeatableRead)
-	WHERE id_dish = @id_dish
+	SELECT M.id_agency, D.id_dish, M.unit, D.dish_name, D.type_dish, D.image, D.price
+		FROM MENU M JOIN DISH D with (RepeatableRead)
+		ON id_agency = @id_agency AND M.id_dish = D.id_dish AND M.isActive = 1 
+	
 COMMIT TRAN
 GO
 
-EXEC PROC_DIRTYREAD_T2_LANG 'dish_5'
+--EXEC PROC_DIRTYREAD_T2_LANG 'dish_5'
 
 
 
 --Lam
---Quản lý cập nhât gmail nhân viên nhưng chưa commit 
---thì quản lý khác vào xem thông tin nhân viên.
--- T1: Quản lý cập nhât tên nhân viên 
+-- Mô tả: Quản lý cửa hàng cập nhật position cho nhân viên cấp dưới (chưa commit) thì nhân viên khác vào xem thông tin của nhân viên được cập nhật
+
+-- T1: Quản lý cửa hàng cập nhật position cho nhân viên cấp dưới
 IF OBJECT_ID('PROC_DIRTYREAD_T1_LAM', 'p') IS NOT NULL DROP PROC PROC_DIRTYREAD_T1_LAM
 GO
 CREATE PROC PROC_DIRTYREAD_T1_LAM @id_employee nchar(10), @gmail nchar(50)
@@ -206,10 +208,10 @@ GO
 CREATE PROC PROC_DIRTYREAD_T2_ANHOA @id_agency nchar(10)
 AS
 BEGIN TRAN
-SET TRAN ISOLATION LEVEL READ UNCOMMITTED  --Đảm bảo cho việc xảy ra DirtyRead
-	SELECT *
-	FROM MENU
-	WHERE id_agency = @id_agency
+SET TRAN ISOLATION LEVEL READ UNCOMMITTED  -- Đảm bảo cho việc xảy ra DirtyRead
+	SELECT M.id_agency, D.id_dish, M.unit, D.dish_name, D.type_dish, D.image, D.price
+	FROM MENU M JOIN DISH D 
+	ON id_agency = @id_agency AND M.id_dish = D.id_dish AND M.isActive = 1
 COMMIT TRAN
 
 EXEC PROC_DIRTYREAD_T2_ANHOA 'ag_1'
@@ -221,9 +223,9 @@ CREATE PROC PROC_DIRTYREAD_T2_ANHOA @id_agency nchar(10)
 AS
 BEGIN TRAN
 SET TRAN ISOLATION LEVEL READ COMMITTED  --Giải quyết lỗi DirtyRead
-	SELECT *
-	FROM MENU
-	WHERE id_agency = @id_agency
+	SELECT M.id_agency, D.id_dish, M.unit, D.dish_name, D.type_dish, D.image, D.price
+	FROM MENU M JOIN DISH D 
+	ON id_agency = @id_agency AND M.id_dish = D.id_dish AND M.isActive = 1
 COMMIT TRAN
 EXEC PROC_DIRTYREAD_T2_ANHOA 'ag_1'
 

@@ -213,7 +213,9 @@ EXEC PROC_LOSTUPDATE_T1_LAM 'bill_1', 'sta_1'
 
 --AnHoa
 
---Mô tả: Khách hàng A đang xem thông tin món X, thì khách hàng B cũng xem thông tin món X rồi đặt mua làm số lượng món giảm, khách hàng A đặt mua món X làm số lượng món giảm.
+--Mô tả: Khách hàng A đang xem thông tin món X, 
+--thì khách hàng B cũng xem thông tin món X rồi đặt mua làm số lượng món giảm, 
+--khách hàng A đặt mua món X làm số lượng món giảm.
 
 --TRANSACTION 1:
 IF OBJECT_ID('PROC_LOSTUPDATE_T1_ANHOA', 'p') is not null DROP PROC PROC_LOSTUPDATE_T1_ANHOA
