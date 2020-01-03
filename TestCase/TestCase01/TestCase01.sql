@@ -1,77 +1,73 @@
-﻿sUSE HuongVietRestaurant
+﻿USE HuongVietRestaurant
 GO
 --===============> TEST CASE 01 <==============
 
 /*
 - TestCase01: 
-- Tình huống: Xảy ra khi người quản lý cập nhật giá của món ăn nhưng chưa commit (bị rollback khi nhập sai) 
-	thì người dùng vào xem thông tin món ăn
+- Tình huống: Quản lý cửa hàng cập nhật tên cho nhân viên cấp dưới (chưa commit) 
+thì nhân viên khác vào xem thông tin của nhân viên được cập nhật
 - Hướng dẫn sử dụng: 
-	+ Bước 1: Chạy TRANSACTION T1 (Update giá của món ăn)
-	+ Bước 2: Trong vòng 15 giây kể từ khi chạy TRANSACTION T1 ta chạy TRANSACTION T2 (xem thông tin món ăn)
+	+ Bước 1: Chạy TRANSACTION T1 (Update tên nhân viên)
+	+ Bước 2: Trong vòng 10 giây kể từ khi chạy TRANSACTION T1 ta chạy TRANSACTION T2 (xem thông tin nhân viên)
 */
-
-/*
-- PROCEDURE
-*/
-
--- PROCEDURE 1
-IF OBJECT_ID('PROC_DIRTYREAD_T1_CHUANVO', 'p') is not null DROP PROC PROC_DIRTYREAD_T1_CHUANVO
+-- T1: Quản lý cập nhât tên nhân viên 
+IF OBJECT_ID('PROC_DIRTYREAD_T1_TRUNGDUC', 'p') IS NOT NULL DROP PROC PROC_DIRTYREAD_T1_TRUNGDUC
 GO
-
-CREATE PROC PROC_DIRTYREAD_T1_CHUANVO @id_dish nchar(10), @price int
+CREATE PROC PROC_DIRTYREAD_T1_TRUNGDUC @id_employee nchar(10), @name nchar(50)
 AS
-BEGIN
-	BEGIN TRAN 
-		UPDATE DISH 
-		SET price = @price
-		WHERE id_dish = @id_dish 
-		WAITFOR DELAY '00:00:15'
-
-		IF @price < 0
+BEGIN TRAN
+		UPDATE EMPLOYEE
+		SET name = @name
+		WHERE id_employee = @id_employee
+		WAITFOR DELAY '00:00:10'
+		IF @name = ''
 		BEGIN
 			PRINT 'Rollback!'
-			ROLLBACK 
+			ROLLBACK TRAN
 		END
-	COMMIT TRAN 
-END
+		ELSE
+		BEGIN
+			COMMIT TRAN
+		END
 
--- PROCEDURE 2
-IF OBJECT_ID('PROC_DIRTYREAD_T2_F_CHUANVO', 'p') is not null DROP PROC PROC_DIRTYREAD_T2_F_CHUANVO
+
+-- T2: quản lý khác vào xem thông tin nhân viên.
+IF OBJECT_ID('PROC_DIRTYREAD_T2_TRUNGDUC', 'p') IS NOT NULL
+DROP PROC PROC_DIRTYREAD_T2_TRUNGDUC
 GO
-CREATE PROC PROC_DIRTYREAD_T2_F_CHUANVO @id_dish nchar(10)
+CREATE PROC PROC_DIRTYREAD_T2_TRUNGDUC @id_employee nchar(10)
 AS
-BEGIN
-	BEGIN TRAN
-	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
-		SELECT * 
-		FROM DISH 
-		WHERE id_dish = @id_dish
-	COMMIT TRAN
-END
+BEGIN TRAN
+		SET TRAN ISOLATION LEVEL READ UNCOMMITTED  
+		SELECT *
+		FROM EMPLOYEE
+		WHERE id_employee = @id_employee
+COMMIT TRAN
 
---FIX => PROCEDURE 2
-IF OBJECT_ID('PROC_DIRTYREAD_T2_T_CHUANVO', 'p') is not null DROP PROC PROC_DIRTYREAD_T2_T_CHUANVO
+
+
+
+-- T2 FIX: quản lý khác vào xem thông tin nhân viên.
+IF OBJECT_ID('PROC_DIRTYREAD_T2_TRUNGDUC', 'p') IS NOT NULL
+DROP PROC PROC_DIRTYREAD_T2_TRUNGDUC
 GO
-CREATE PROC PROC_DIRTYREAD_T2_T_CHUANVO @id_dish nchar(10)
+CREATE PROC PROC_DIRTYREAD_T2_TRUNGDUC @id_employee nchar(10)
 AS
-BEGIN
-	BEGIN TRAN
-		SELECT * 
-		FROM DISH 
-		WHERE id_dish = @id_dish and isActive = 1
-	COMMIT TRAN
-END
+BEGIN TRAN
+		SET TRAN ISOLATION LEVEL READ COMMITTED  
+		SELECT *
+		FROM EMPLOYEE
+		WHERE id_employee = @id_employee
+COMMIT TRAN
 
-/*
-- TRANSACTION 
-*/
+
+
 
 --T1
-EXEC PROC_DIRTYREAD_T1_CHUANVO 'dish_1', '25000'
+EXEC PROC_DIRTYREAD_T1_TRUNGDUC 'em_1', ''
 
 -- T2(ERROR)
-EXEC PROC_DIRTYREAD_T2_F_CHUANVO 'dis_1'
+EXEC PROC_DIRTYREAD_T2_TRUNGDUC 'em_1'
 
 --T2 (FIXED)
-EXEC PROC_DIRTYREAD_T2_T_CHUANVO 'dis_1'
+EXEC PROC_DIRTYREAD_T2_TRUNGDUC 'em_1'

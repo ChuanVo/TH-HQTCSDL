@@ -51,7 +51,7 @@ COMMIT TRAN
 --Lang
 
 --Quản lý A đang xem danh sách loại món ăntheo loai mon an 1 B thêm loại món ăn mới thuoc loai mon an 1
-  --TRANSACTION 1--
+--TRANSACTION 1--
 IF OBJECT_ID('PROC_PHANTOM_T1_LANG', N'P') IS NOT NULL DROP PROC PROC_PHANTOM_T1_LANG
 GO
 CREATE PROC PROC_PHANTOM_T1_LANG
@@ -66,7 +66,7 @@ COMMIT TRAN
 GO
 
 EXEC PROC_PHANTOM_T1_LANG N'td_1'
-  --TRANSACTION 2--
+--TRANSACTION 2--
 IF OBJECT_ID('PROC_PHANTOM_T2_LANG', N'P') IS NOT NULL DROP PROC PROC_PHANTOM_T2_LANG
 GO
 CREATE PROC PROC_PHANTOM_T2_LANG
@@ -191,8 +191,6 @@ EXEC PROC_PHANTOM_T1_ANHOA 'ag_1'
 
 
 --TrungDuc
-USE HuongVietRestaurant
-GO
 
 --LỖI PHANTOM
 --Người quản lý A xem toàn bộ đơn hàng (chưa xong) thì có đơn hàng mới được tạo.

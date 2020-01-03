@@ -145,8 +145,7 @@ GO
 EXEC PROC_LOSTUPDATE_T2_LANG 'dish_5', 10, 'ag_1'
 
 --Lam
---Quản lý A cập nhật tình trạng đơn hàng của đơn hàng D nhưng chưa commit thì người quản lý B cũng cập nhật tình 
--- tình trạng đơn hàng của  đơn hàng D. (2 quản lý cùng thuộc 1 chi nhánh)
+--Quản lý A cập nhật tình trạng đơn hàng của đơn hàng D nhưng chưa commit thì người quản lý B cũng cập nhật tình tình trạng đơn hàng của  đơn hàng D. (2 quản lý cùng thuộc 1 chi nhánh)
 --TRANSACTION 1
 IF OBJECT_ID('PROC_LOSTUPDATE_T1_LAM', N'P') IS NOT NULL DROP PROC PROC_LOSTUPDATE_T1_LAM
 GO

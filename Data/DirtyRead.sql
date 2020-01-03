@@ -86,7 +86,6 @@ GO
 EXEC PROC_DIRTYREAD_T1_LANG 'dish_5', ''
 
 --TRANSACTION 2 --
---TRANSACTION 2 --
 IF OBJECT_ID('PROC_DIRTYREAD_T2_LANG', N'P') IS NOT NULL DROP PROC PROC_DIRTYREAD_T2_LANG
 GO
 CREATE PROC PROC_DIRTYREAD_T2_LANG
@@ -122,7 +121,7 @@ GO
 
 
 --Lam
--- Mô tả: Quản lý cửa hàng cập nhật position cho nhân viên cấp dưới (chưa commit) thì nhân viên khác vào xem thông tin của nhân viên được cập nhật
+-- Mô tả: Quản lý cửa hàng cập nhật email cho nhân viên cấp dưới (chưa commit) thì nhân viên khác vào xem thông tin của nhân viên được cập nhật
 
 -- T1: Quản lý cửa hàng cập nhật position cho nhân viên cấp dưới
 IF OBJECT_ID('PROC_DIRTYREAD_T1_LAM', 'p') IS NOT NULL DROP PROC PROC_DIRTYREAD_T1_LAM
@@ -230,7 +229,7 @@ COMMIT TRAN
 EXEC PROC_DIRTYREAD_T2_ANHOA 'ag_1'
 
 --TRUNGDUC
--- Mô tả: Quản lý cửa hàng cập nhật position cho nhân viên cấp dưới (chưa commit) thì nhân viên khác vào xem thông tin của nhân viên được cập nhật
+-- Mô tả: Quản lý cửa hàng cập nhật tên cho nhân viên cấp dưới (chưa commit) thì nhân viên khác vào xem thông tin của nhân viên được cập nhật
 
 -- T1: Quản lý cập nhât tên nhân viên 
 IF OBJECT_ID('PROC_DIRTYREAD_T1_TRUNGDUC', 'p') IS NOT NULL DROP PROC PROC_DIRTYREAD_T1_TRUNGDUC
